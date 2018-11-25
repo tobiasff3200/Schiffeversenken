@@ -1,72 +1,16 @@
-<html>
-<head>
-	<title>Schiffeversenken</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	<script>
-		// id of the client
-		var index = false;
-		// status indicator for testing. Replace with p5.js objekt.
-		var status = $('#status');
+<!DOCTYPE html><html><head>
+    <script src="p5.min.js"></script>
+    <script src="p5.dom.min.js"></script>
+    <script src="p5.sound.min.js"></script>
+		
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8">
 
-		// if user is running mozilla then use it's built-in WebSocket
-		window.WebSocket = window.WebSocket || window.MozWebSocket;
-		// if browser doesn't support WebSocket, just show some notification and exit
-		if (!window.WebSocket) {
-			content.html($('<p>',
-				{ text:'Sorry, but your browser doesn\'t support WebSocket.'}
-			));
-		}
+  </head>
+  <body>
+      <script src="sketch.js"></script>
+      <script src="GameField.js"></script>
+      <script src="Ship.js"></script>
+      <script src="GameManager.js"></script>
 
-		// open connection
-		var connection = new WebSocket('ws://127.0.0.1:1337');
-
-		// catching errors witch the connection
-		connection.onerror = function (error) {
-			content.html($('<p>', {
-				text: 'Sorry, but there\'s some problem with your connection or the server is down.'
-			}));
-		};
-
-		// onopen() is executed once the connection is established
-		connection.onopen = function () {
-			$('#status').html('Connected');
-		};
-
-		// This event is trigert everytime a message is send from the server
-		connection.onmessage = function (message){
-			// trying to decode the JSON
-			try {
-				var json = JSON.parse(message.data);
-			} catch (e) {
-				console.log('Invalid JSON: ', message.data);
-				return;
-			}
-
-			// set index (ID) if unset
-			if(index === false && json.type === 'index'){
-				index = json.data;
-				$('#index').html('Index: '+index);
-			}
-
-			// receiving a shoot from the enemy
-			if(json.type === 'shoot'){
-				// gamelogik for shoot from the other player
-			}
-		}
-
-		// shoot at the enemy
-		function shoot(column, row){
-			// Optional gamelogik for checking something
-
-			//send it to the server
-			var json = "{\"type:'shoot', index:'"+index+"', column:'"+column+"', row:'"+row+"'}";
-			alert(json);
-			connection.send(json);
-		}
-	</script>
-</head>
-<body>
-	<span id="status">Connecting...</span><br>
-	<span id="index"></span><br>
-</body>
-</html>
+</body></html>
