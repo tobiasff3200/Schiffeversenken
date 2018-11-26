@@ -1,19 +1,27 @@
-// if user is running mozilla then use it's built-in WebSocket
-window.WebSocket = window.WebSocket || window.MozWebSocket;
-// if browser doesn't support WebSocket, just show some notification and exit
-if (!window.WebSocket) {
-	content.html($('<p>',
-		{ text:'Sorry, but your browser doesn\'t support WebSocket.'}
-	));
-}
+function Websocket(DataM){
+	this.dataManager = DataM;
+	this.connection;
+	this.checkBrowser();
+	this.initializeConnection();
 
-// open connection
-var connection = new WebSocket('ws://127.0.0.1:1337');
+	this.checkBrowser = function(){
+		// if user is running mozilla then use it's built-in WebSocket
+		window.WebSocket = window.WebSocket || window.MozWebSocket;
+		// if browser doesn't support WebSocket, just show some notification and exit
+		if (!window.WebSocket) {
+			alert('Sorry, but your browser doesn\'t support WebSocket.');
+		}
+	}
 
-// catching errors with the connection
-connection.onerror = function (error) {
-	alert('Sorry, but there\'s some problem with your connection or the server is down.');
-};
+	this.initializeConnection = function(){
+		// open connection
+		this.connection = new WebSocket('ws://127.0.0.1:1337');
+	}
+
+		// catching errors with the connection
+		connection.onerror = function (error) {
+			alert('Sorry, but there\'s some problem with your connection or the server is down.');
+		};
 
 // onopen() is executed once the connection is established
 connection.onopen = function () {
@@ -30,5 +38,6 @@ connection.onmessage = function (message){
 		return;
 	}
 
-	DataManager.receiveData(json);
+	this.dataManager.receiveData(json);
+}
 }
