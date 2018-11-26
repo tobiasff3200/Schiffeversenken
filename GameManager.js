@@ -182,12 +182,15 @@ function GameManager(dataManager){
         return this.shipPosSafed;
     }
     
-    //prüft ob alle Schiffe versenkt wurden
+    //prüft ob alle Schiffe versenkt wurden, wenn ja sendet er es an den gegner 
+    //und beendet das spiel
     this.checkWin = function(){
         //wenn genauso viele (oder mehr) Schiffe versenkt wurden wie es Schiffe gibt,
         //dann hat man gewonnen
         if(gameScore >= SHIPLENGTH){
             this.gameEnd = true;
+            //
+            dataManager.send("GM", "Reply", "Finish");
             return true;
         }else{
             return false;
@@ -208,7 +211,7 @@ function GameManager(dataManager){
     }
     
     //wird aufgerufen wenn der Gegner eine Anfrage geschickt hat
-    this.receiveQuestion = function(data){
+    this.receiveQuestion = function(data, requestNumber){
         //prüft ob die Daten vorhanden und in der richtigen größe sind
         if(data != null && data.length >= 2){
             var x = data[0];
@@ -217,7 +220,7 @@ function GameManager(dataManager){
             var result = checkShootAt(x, y);
             if(result != null){
                 //wenn das ergebnis nicht null ist schicke es an den Gegner
-                dataManager.send("GM", "Ask", result);
+                dataManager.send("GM", "Ask", [x, y, result], requestNumber);
                 //es wird nicht mehr auf den Server gewartet
                 this.waitingForServer = true;
             }
@@ -237,7 +240,7 @@ function GameManager(dataManager){
                 //setzte Status des Feldes auf MISS
                 GameField.setState(x, y, MISS);
                 //sag dem Server der andere Spieler ist dran
-                dataManager.send("GM", "Reply", NEXTTURN);
+                dataManager.send("GM", "Reply", [NEXTTURN]);
                 //erhöht die momentane Runde um 1 (gameTurn)
                 this.gameTurn++;
             }else if(data[2] >= HIT){
@@ -250,7 +253,14 @@ function GameManager(dataManager){
                 }
                 //da man getroffen hat darf man nochmal schießen, deswegen wird die momentane
                 //Runde nicht erhöht
-                alert(this.checkWin() ? "You've won the Game!" : "You hit a ship. Shoot another one!");
+                //sollte man gewonnen haben, wird der gegner benachrichtigt und das Spiel beendet
+                if(this.checkWin()){
+                    dataManager.send("GM", "Reply", ["Finish"]);
+                    this.gameEnd = true;
+                    alert("You've won the Game!");
+                }else{
+                    alert("You hit a ship. Shoot another one!");
+                }
             }
             //es wird nicht mehr auf den Server gewartet
             this.waitingForServer = false;
@@ -259,15 +269,17 @@ function GameManager(dataManager){
     
     //wird aufgerufen wenn der Gegner eine Antwort geschickt hat
     this.receiveReply = function(data){
-        if(data == NEXTTURN){
-            //nächste Runde, also wird gameTurn erhöht
-            this.gameTurn++;
-            //und die inputs freigegeben
-            this.waitingForServer = false;
-            alert("Its your turn!");
-        }else if(data == "Finish"){
-            //der Gegner hat gewonnen, wenn er "Finish" schickt
-            alert("You lose! Good luck next round");
+        if(data != null){
+            if(data[0] == NEXTTURN){
+                //nächste Runde, also wird gameTurn erhöht
+                this.gameTurn++;
+                //und die inputs freigegeben
+                this.waitingForServer = false;
+                alert("Its your turn!");
+            }else if(data[0] == "Finish"){
+                //der Gegner hat gewonnen, wenn er "Finish" schickt
+                alert("You lose! Good luck next round");
+            }
         }
     }
 }

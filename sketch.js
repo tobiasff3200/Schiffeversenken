@@ -3,7 +3,7 @@ var gameManager;
 function setup() {
     createCanvas(450, 600);
     gameManager = new GameManager();
-    gameManager.setup();  
+    gameManager.setup(); 
 }
 
 function draw() {
