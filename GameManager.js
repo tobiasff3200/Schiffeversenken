@@ -80,7 +80,6 @@ function GameManager(){
             if(inputTyp == "MousePressed"){
                 if(data.x != null && data.y != null){
                     this.mousePressedGame(data.x, data.y);
-                    alert(data.x + " - " + data.y);
                 }
             }
             if(inputTyp == "MouseReleased"){
@@ -205,7 +204,7 @@ function GameManager(){
         if(fieldInizes != null && game.fieldStates[fieldInizes.x][fieldInizes.y] == EMPTY){
             //sende position an Server, und setzte waitingForServer auf true sodass alle
             //inputs geblocked werden
-            dataManager.send("GM", "Ask", [fieldInizes.x, fieldInizes.y]);
+            this.dataManager.send("GM", "Ask", [fieldInizes.x, fieldInizes.y]);
             this.waitingForServer = true;
         }
     }

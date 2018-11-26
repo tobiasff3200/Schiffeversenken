@@ -13,7 +13,7 @@ function DataManager(GameM){
 		return number;
 	}
 
-	this.send = function(receiver, type, data, number = randomFloatInArray()){
+	this.send = function(receiver, type, data, number = this.randomFloatNotInArray()){
 		//convert data in JSON
 		if(type == "Ask"){
 			var json = "{"
@@ -23,7 +23,7 @@ function DataManager(GameM){
 					+"\"data\": \""+data+"\""
 					+"}";
 			//send as JSON
-			connection.send(json);
+			this.websocket.connection.send(json);
 			this.sendedData.push(number);
 		}
 		var json = "{"
@@ -32,7 +32,7 @@ function DataManager(GameM){
 				+"\"data\": \""+data+"\""
 				+"}";
 		//send as JSON
-		connection.send(json);
+		this.websocket.connection.send(json);
 	}
 
 	this.receiveData = function(data){
