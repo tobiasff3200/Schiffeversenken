@@ -15,10 +15,8 @@ const EMPTY = 0;
 const SIZE = 20;
 
 function GameManager(){
-                        //|\\
-    //ist für die verarbeitung und das senden der Daten verantwortlich
 
-	//erstellen des dataManagers
+    //ist für die verarbeitung und das senden der Daten verantwortlich
 	this.dataManager;
     //Speichert alle Schiffe
     this.ships = [];
