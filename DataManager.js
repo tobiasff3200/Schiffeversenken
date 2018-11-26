@@ -19,7 +19,7 @@ class DataManager{
 					+"}";
 			//send as JSON
 			connection.send(json);
-			this.sendedData.push([number, receiver, type, data]);
+			this.sendedData.push(number);
 		}
 		var json = "{"
 				+"\"receiver\": \""+receiver+"\","
