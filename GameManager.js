@@ -38,8 +38,8 @@ function GameManager(){
     
     //initialiesiert alles wichtige für das Spiel
     //GameFields und Schiffe und ruft deren setup's auf
-    this.setup = function(){
-        this.dataManager = new DataManager(this);
+    this.setup = function(dataManager){
+        this.dataManager = dataManager;
         this.gameFields[0] = new GameField(20, 20, 10, 10);
         this.gameFields[1] = new GameField(20, 240, 10, 10);
         this.gameFields[0].setup();

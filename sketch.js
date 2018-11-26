@@ -1,14 +1,17 @@
 var gameManager;
+var dataManager;
 
 function setup() {
     createCanvas(450, 600);
     gameManager = new GameManager();
-    gameManager.setup();  
+    dataManager = new DataManager();
+    gameManager.setup(dataManager);
+    dataManager.setup(gameManager);
 }
 
 function draw() {
     background(0);
-    gameManager.show();   
+    gameManager.show();
 }
 
 

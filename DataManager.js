@@ -1,9 +1,13 @@
-function DataManager(gameManager){
+function DataManager(){
 
     this.websocket = new Websocket(this);
     this.sendedData = [];
 
 
+    this.setup = function(gameManager){
+        this.gameManager = gameManager;
+    }
+    
 	this.randomFloatNotInArray = function(){
 		var number;
         do{
@@ -35,17 +39,17 @@ function DataManager(gameManager){
 	this.receiveData = function(input){
 		//if typ == "Reply" -> execute gameManager.receiveReply(data);
 		if(input.type === "Reply"){
-			gameManager.receiveReply(input.data);
+			this.gameManager.receiveReply(input.data);
 		}
 		//if typ == "Ask" && number in sendedData[] -> execute gameManager.receiveResult(data)
 		var index = this.sendedData.indexOf(input.number);
         if(input.type === "Ask" && index != -1){
-			gameManager.receiveResult(input.data);
+			this.gameManager.receiveResult(input.data);
             this.sendedData.splice(index, 1);
 		}
 		//if typ == "Ask" && number NOT in sendedData[] -> execute gameManager.receiveQuestion(data)
 		if(input.type === "Ask" && index == -1){
-			gameManager.receiveQuestion(input.data, input.number);
+			this.gameManager.receiveQuestion(input.data, input.number);
 		}
 	}
 }
