@@ -14,10 +14,10 @@ const EMPTY = 0;
 //bestimmt die größe der Schiffe, Felder und Schüssen
 const SIZE = 20;
 
-function GameManager(dataManager){
-                        //|\\
+function GameManager(){
+
     //ist für die verarbeitung und das senden der Daten verantwortlich
-    
+    this.dataManager = null;
     //Speichert alle Schiffe
     this.ships = [];
     //Speichert die beiden gameFields - 0 = oben 1 = unten
@@ -39,6 +39,7 @@ function GameManager(dataManager){
     //initialiesiert alles wichtige für das Spiel
     //GameFields und Schiffe und ruft deren setup's auf
     this.setup = function(){
+        this.dataManager = new DataManager(this);
         this.gameFields[0] = new GameField(20, 20, 10, 10);
         this.gameFields[1] = new GameField(20, 240, 10, 10);
         this.gameFields[0].setup();
@@ -77,7 +78,6 @@ function GameManager(dataManager){
             if(inputTyp == "MousePressed"){
                 if(data.x != null && data.y != null){
                     this.mousePressedGame(data.x, data.y);
-                    alert(data.x + " - " + data.y);
                 }
             }
             if(inputTyp == "MouseReleased"){
@@ -190,7 +190,7 @@ function GameManager(dataManager){
         if(gameScore >= SHIPLENGTH){
             this.gameEnd = true;
             //
-            dataManager.send("GM", "Reply", "Finish");
+            this.dataManager.send("GM", "Reply", "Finish");
             return true;
         }else{
             return false;
@@ -205,6 +205,7 @@ function GameManager(dataManager){
         if(fieldInizes != null && game.fieldStates[fieldInizes.x][fieldInizes.y] == EMPTY){
             //sende position an Server, und setzte waitingForServer auf true sodass alle 
             //inputs geblocked werden
+            this.dataManager.send("GM", "Ask", [fieldInizes.x, fieldInizes.y]);
             this.waitingForServer = true;
         }
     }
@@ -219,6 +220,7 @@ function GameManager(dataManager){
             var result = checkShootAt(x, y);
             if(result != null){
                 //wenn das ergebnis nicht null ist schicke es an den Gegner
+                this.dataManager.send("GM", "Ask", [x, y, result], requestNumber);
                 //es wird nicht mehr auf den Server gewartet
                 this.waitingForServer = true;
             }
@@ -238,6 +240,7 @@ function GameManager(dataManager){
                 //setzte Status des Feldes auf MISS
                 GameField.setState(x, y, MISS);
                 //sag dem Server der andere Spieler ist dran
+                this.dataManager.send("GM", "Reply", [NEXTTURN]);
                 //erhöht die momentane Runde um 1 (gameTurn)
                 this.gameTurn++;
             }else if(data[2] >= HIT){
@@ -252,6 +255,7 @@ function GameManager(dataManager){
                 //Runde nicht erhöht
                 //sollte man gewonnen haben, wird der gegner benachrichtigt und das Spiel beendet
                 if(this.checkWin()){
+                    this.dataManager.send("GM", "Reply", ["Finish"]);
                     this.gameEnd = true;
                     alert("You've won the Game!");
                 }else{
