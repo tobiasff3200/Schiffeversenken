@@ -1,11 +1,18 @@
 function Websocket(DataM){
-	// if user is running mozilla then use it's built-in WebSocket
-	window.WebSocket = window.WebSocket || window.MozWebSocket;
-	// if browser doesn't support WebSocket, just show some notification and exit
-	if (!window.WebSocket) {
-		alert('Sorry, but your browser doesn\'t support WebSocket.');
+	
+    this.setup = function(){
+        this.checkBrowser();
+        this.initializeConnection();
+    }
+    
+	this.checkBrowser = function(){
+		// if user is running mozilla then use it's built-in WebSocket
+		window.WebSocket = window.WebSocket || window.MozWebSocket;
+		// if browser doesn't support WebSocket, just show some notification and exit
+		if (!window.WebSocket) {
+			alert('Sorry, but your browser doesn\'t support WebSocket.');
+		}
 	}
-	//}
 
 	// open connection
 	this.connection = new WebSocket('ws://127.0.0.1:1337');
