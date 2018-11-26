@@ -1,4 +1,7 @@
 function Websocket(DataM){
+    
+    // open connection
+	this.connection = new WebSocket('ws://127.0.0.1:1337');
 	
     this.setup = function(){
         this.checkBrowser();
@@ -13,9 +16,6 @@ function Websocket(DataM){
 			alert('Sorry, but your browser doesn\'t support WebSocket.');
 		}
 	}
-
-	// open connection
-	this.connection = new WebSocket('ws://127.0.0.1:1337');
 
 	// catching errors with the connection
 	this.connection.onerror = function (error) {

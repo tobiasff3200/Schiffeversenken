@@ -31,9 +31,9 @@ function DataManager(){
 					+"\"type\": \""+type+"\","
 					+"\"data\": \""+data+"\""
 					+"}";
-
-        //send as JSON
-		this.websocket.connection.send(json);
+        
+        //try to send as JSON
+        this.websocket.connection.send(json);
 	}
 
 	this.receiveData = function(input){
