@@ -3,14 +3,18 @@ class DataManager{
 
 	}
 	this.sendedData = [];
-
-	send(receiver, type, data){
+		
+	randomFloatNotInArray(){
+		do{
+				var number = Math.random();
+		}
+		while(this.sendedData.indexOf(number)!=-1);
+		return number;
+	}
+	
+	send(receiver, type, data, number = randomFloatInArray()){
 		//convert data in JSON
 		if(type == "Ask"){
-			do{
-				var number = Math.random();
-			}
-			while(this.sendedData.indexOf(number)!=-1);
 			var json = "{"
 					+"\"number\":\""+number+"\","
 					+"\"receiver\": \""+receiver+"\","
