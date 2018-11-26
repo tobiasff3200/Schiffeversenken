@@ -1,6 +1,4 @@
 function Websocket(DataM){
-    
-	this.dataManager = DataM;
 	this.connection = "test";
 
     this.setup = function(){

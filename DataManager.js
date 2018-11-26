@@ -29,7 +29,7 @@ function DataManager(gameManager){
 					+"}";
         
         //send as JSON
-		connection.send(json);		
+		this.websocket.connection.send(json);		
 	}
 
 	this.receiveData = function(input){
