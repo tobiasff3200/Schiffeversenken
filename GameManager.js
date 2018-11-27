@@ -26,8 +26,9 @@ function GameManager(){
     this.shipPosSafed = false;
     //indikator dafür ob das Spiel angefangen hat oder nicht
     this.gameStarted = false;
-    //zeigt ob das Spiel zuende ist oder nicht
-    this.gameEnd = false;
+    //simbolisiert ob die Spieler bereit sind oder nicht
+    this.youReady = false;
+    this.enemyReady = false;
     //speichert den aktuellen zug - n%2 == 0 -> spieler1 , n%2 != 0 -> spieler2
     this.gameTurn = 0;
     //speichert die Punkte eines Spielers. Bei jedem versenkten schiff wird er um eins erhöt
@@ -72,19 +73,19 @@ function GameManager(){
     }
     
 //-----------------------------------------inputs------------------------------------------//
-    
+//                                          \\//
     this.callInput = function(inputTyp, data){
-        if(!this.waitingForServer && !this.gameEnd){ // && this.gameTurn%2 == (je nach Spieler)
+        if(!this.waitingForServer){ // && this.gameTurn%2 == (je nach Spieler)
             if(inputTyp == "MousePressed"){
                 if(data.x != null && data.y != null){
                     this.mousePressedGame(data.x, data.y);
                 }
-            }
+            }else
             if(inputTyp == "MouseReleased"){
                 if(data.x != null && data.y != null){
                     this.mouseReleasedGame(data.x, data.y);
                 }
-            }
+            }else
             if(inputTyp == "KeyPressed"){
                 if(data != null){
                     this.keyPressedGame(key);
@@ -96,7 +97,7 @@ function GameManager(){
     //mousePressed Methode für den GameManager die von sketch.js aufgerufen wird
     this.mousePressedGame = function(mouseX, mouseY){
         //es wird zuerst gegrüft ob man ein Schiff hoch nimmt, da man nicht
-        //schissen will wenn man ein Schiff vom oberen Feld runter nimmt
+        //schießen will wenn man ein Schiff vom oberen Feld runter nimmt
         if(!this.dragClickedShip(mouseX, mouseY)){
             this.shootAtClickedField(mouseX, mouseY, this.gameFields[0]);
         }
@@ -118,15 +119,18 @@ function GameManager(){
             this.safeShipPosition();
         }
         //prüft ob beide Spieler "ready" sind
-        if(key == 'p' || key == 'P'){
+        if((key == 'p' || key == 'P')){
             this.checkGameReadyToPlay();
         }
-    }
+    }                                       
+//                                          //\\
 //-----------------------------------------inputs------------------------------------------//
     
     //setzt die Var Dragging des angeklicketen Schiffes auf true, sodass es
     //in der show methode bewegt werden kann. Man kann nur ein Schiff bewegen
     //Es wird immer das oberste Schiff genommen
+    //es ist sichergestellt, dass das Schiff nicht bewegt werden kann wenn die
+    //Position geseichert wurde
     this.dragClickedShip = function(xPix, yPix){
         //erstellt eine Hilfsvar in dem alle einträge in der falschen Reihenfolge sind
         //das führt dazu, dass das letzte gezeichnete Schiff als erstes abgefragt wird
@@ -152,12 +156,13 @@ function GameManager(){
     }
     
     //rotiert das Schiff über dem die Mouse drüber ist
+    //aber nur wenn die Schiffe noch nicht gespeichert wurden (abfrage in rotate())
     this.rotateShipMouseOver = function(){
-        for(var ship of this.ships){
-            if(ship.checkMouseInside()){
-                ship.rotate(this.gameFields[1]);
-            }   
-        }
+            for(var ship of this.ships){
+                if(ship.checkMouseInside()){
+                    ship.rotate(this.gameFields[1]);
+                }   
+            }
     }
     
     //checkt ob alle Schiffe auf einem akzeptierten Feld stehen und 
@@ -179,8 +184,21 @@ function GameManager(){
             }
             alert("Die Schiffe sind nicht richtig platziert worden, \n" + 
                   "Bitte beachten Sie die Regeln");
+        }else{
+            alert("Position der Schiffe wurde gespeichert")
         }
         return this.shipPosSafed;
+    }
+    
+    //prüft ob alle Bedingungen erfüllt wurden um das Spiel zu starten
+    //kann im Nachhinein noch erweitert werden
+    this.checkGameReadyToPlay = function(){
+        //wenn alle Schiffe richtig stehen wird der Spieler auf ready gesetzt
+        //und der gegner wird informiert
+        if(this.shipPosSafed){
+            this.youReady = true;
+            this.sendReady();
+        }
     }
     
     //prüft ob alle Schiffe versenkt wurden, wenn ja sendet er es an den gegner 
@@ -190,7 +208,7 @@ function GameManager(){
         //dann hat man gewonnen
         if(gameScore >= SHIPLENGTH){
             this.gameEnd = true;
-            //
+            //der Gegner wird informiert dass er verloren hat
             this.dataManager.send("GM", "Reply", "Finish");
             return true;
         }else{
@@ -278,16 +296,53 @@ function GameManager(){
                 //und die inputs freigegeben
                 this.waitingForServer = false;
                 alert("Its your turn!");
-            }else if(data[0] == "Finish"){
+            }else
+            
+            if(data == "Ready"){
+                if(this.youReady){
+                    //wenn der Spieler schon ready ist und vom gegner ein 
+                    //Ready kommt wird start an den gegner gesendet
+                    this.dataManager.send("GM", "Reply", "Start");
+                    this.enemyReady = true;
+                    this.gameStarted = true;
+                    alert("The Game has started");
+                }else{
+                    //wenn nicht wird der Gegner auf Ready gesetzt und
+                    //dem Spieler wird mitgeteilt dass der Gegner ready ist
+                    alert("The enemy is Ready!");
+                    this.enemyReady = true;
+                }             
+            }else
+            if(data == "Start" && this.youReady){
+                //Das Spiel hat gestartet
+                this.enemyReady = true;
+                this.gameStarted = true;
+            }else 
+                if(data[0] == "Finish"){
                 //der Gegner hat gewonnen, wenn er "Finish" schickt
                 alert("You lose! Good luck next round");
             }
         }
     }
     
-    this.receiveStart = function(data){
-        //ToDo: wenn alle Schiffe richtig plaziert und gespeichert 
-        //      wurden, muss der gegner informiert werden dass das 
-        //      spiel los geht (this.gameStarted = true)
-    }
+    //soll dem gegner sagen ob der Spieler bereit ist, bzw das Spiel gestartet hat
+    this.sendReady = function(data){
+        if(this.youReady){
+            if(this.enemyReady){
+                //wenn beide bereit sind kann gestartet werden
+                this.dataManager.send("GM", "Reply", "Start");
+                this.gameStarted = true;
+                alert("The game has started");
+            }else{
+                //wenn der Gegner noch nicht bereit wird ihm mitgeteilt, dass der 
+                //Speiler bereit ist 
+                this.dataManager.send("GM", "Reply", "Ready");
+                alert("Waiting for enemy");
+            }
+        }else{
+            //sollte die Methode aufgerufen werden obwohl man nicht 
+            //Bereit ist wird ein Fehler aufgerufen
+            throw "Error while starting";
+        }
+    }   
 }

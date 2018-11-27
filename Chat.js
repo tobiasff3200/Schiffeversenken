@@ -159,7 +159,8 @@ function Chat(x, y, wid, heig){
         this.chat.push(msg_);
     }
     
-    
+    //gibt den Text an der Position index zurück
+    //(1 <= index < arr.length) wie im chat dargestellt
     this.getMsg = function(index){
         if(0 < index && index <= this.chat.length){
             return this.chat[index-1];
