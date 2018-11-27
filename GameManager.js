@@ -26,13 +26,13 @@ function GameManager(){
     this.shipPosSafed = false;
     //indikator dafür ob das Spiel angefangen hat oder nicht
     this.gameStarted = false;
+    //zeigt ob das Spiel zuende ist oder nicht
+    this.gameEnd = false;
     //speichert den aktuellen zug - n%2 == 0 -> spieler1 , n%2 != 0 -> spieler2
     this.gameTurn = 0;
     //speichert die Punkte eines Spielers. Bei jedem versenkten schiff wird er um eins erhöt
     //bis er die größe des Arrays der vorhandenen Schiffe hat -dann hat der spieler gewonnen
     this.gameScore = 0;
-    //zeigt ob das Spiel zuende ist oder nicht
-    this.gameEnd = false;
     //zeigt an ob momentan auf eine antwort vom server gewartet wird (blockiert alle inputs)
     this.waitingForServer = false;
     
@@ -203,7 +203,8 @@ function GameManager(){
     this.shootAtClickedField = function(xPix, yPix, game){
         var fieldInizes  = game.convertPixPosInFieldIndex(xPix, yPix);
         //prüft ob das Feld existiert und ob es noch nicht beschossen wurde
-        if(fieldInizes != null && game.fieldStates[fieldInizes.x][fieldInizes.y] == EMPTY){
+        //nur wenn das spiel gestartet hat
+        if(this.gameStarted && fieldInizes != null && game.fieldStates[fieldInizes.x][fieldInizes.y] == EMPTY){
             //sende position an Server, und setzte waitingForServer auf true sodass alle 
             //inputs geblocked werden
             this.dataManager.send("GM", "Ask", [fieldInizes.x, fieldInizes.y]);
@@ -282,5 +283,11 @@ function GameManager(){
                 alert("You lose! Good luck next round");
             }
         }
+    }
+    
+    this.receiveStart = function(data){
+        //ToDo: wenn alle Schiffe richtig plaziert und gespeichert 
+        //      wurden, muss der gegner informiert werden dass das 
+        //      spiel los geht (this.gameStarted = true)
     }
 }
