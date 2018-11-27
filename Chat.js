@@ -49,28 +49,7 @@ function Chat(x, y, wid, heig){
         translate(0, 0);
     }
     
-    this.printMsg = function(){
-        this.msg = this.msg.trim();
-        if(this.msg.length > 0){
-          this.chat.push(this.msg);
-          this.msg = "";
-        }
-    }
-    
-    this.postMsg = function(msg_){
-        if(Array.isArray(msg_)){
-            this.chat = Array.concat(this.chat, msg_);
-        }else{
-            this.chat += msg_;
-        }
-    }
-    
-    this.getMsg = function(index){
-        if(0 <= index && index < this.chat.length){
-            return this.chat[index];
-        }
-        return null;
-    }
+//---------------------------inputs--------------------------------//
     
     this.callInput = function(inputTyp, data){
         if(inputTyp == "KeyPressed"){
@@ -90,7 +69,7 @@ function Chat(x, y, wid, heig){
           this.msg += key;
         }
         if(keyCode == ENTER){
-          this.printMsg();
+          this.printMsg(); //dataManager.send();
         }
         if(keyCode == BACKSPACE){
           if(this.msg.equals != "")
@@ -108,7 +87,38 @@ function Chat(x, y, wid, heig){
         }
     }
     
+    window.onkeydown = function(e) {
+      if (e.keyCode == 32 && e.target == document.body) {
+        e.preventDefault();
+      }
+    };
+    
+//---------------------------inputs--------------------------------//
+   
     this.checkValidKey = function(key){
         return new RegExp("^[a-zA-Z0-9 .öäü]+$").test(key);
+    }
+    
+    this.printMsg = function(){
+        this.msg = this.msg.trim();
+        if(this.msg.length > 0){
+          this.chat.push(this.msg);
+          this.msg = "";
+        }
+    }
+    
+    this.postMsg = function(msg_){
+        if(Array.isArray(msg_)){
+            this.chat = Array.concat(this.chat, msg_);
+        }else{
+            this.chat.push(msg_);
+        }
+    }
+    
+    this.getMsg = function(index){
+        if(0 <= index && index < this.chat.length){
+            return this.chat[index];
+        }
+        return null;
     }
 }
