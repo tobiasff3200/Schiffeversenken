@@ -18,17 +18,18 @@ function DataManager(gameManager){
         var randNum = number;
 		if(type == "Ask" && randNum == null){
             randNum = this.randomFloatNotInArray();
-            this.sendedData.push(number);
+            this.sendedData.push(randNum);
         }
 
         var json = "{"
-					+"\"number\":\""+number+"\","
+					+"\"number\":\""+randNum+"\","
 					+"\"receiver\": \""+receiver+"\","
 					+"\"type\": \""+type+"\","
 					+"\"data\": \""+data+"\""
 					+"}";
 
         //send as JSON
+		console.log(json);
 		this.websocket.connection.send(json);
 	}
 

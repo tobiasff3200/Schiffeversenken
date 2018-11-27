@@ -24,9 +24,9 @@ function Websocket(DataM){
 	this.connection.onmessage = function (message){
 		// trying to decode the JSON
 		try {
-			var json = JSON.parse(message.data);
+			var json = JSON.parse(message);
 		} catch (e) {
-			console.log('Invalid JSON: ', message.data);
+			console.log('Invalid JSON: ', message);
 			return;
 		}
 

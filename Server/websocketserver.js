@@ -8,9 +8,9 @@ var server = http.createServer(function(request, response) {
 	// process HTTP request. Since we're writing just WebSockets
 	// server we don't have to implement anything.
 });
-server.listen(1337, function() { });
-console.log((new Date()) + " Server is listening on port 1337");
-
+server.listen(1337, function() {
+	console.log((new Date()) + " Server is listening on port 1337");
+});
 // create the server
 wsServer = new WebSocketServer({
 	httpServer: server
@@ -26,28 +26,25 @@ wsServer.on('request', function(request) {
 	// we need to know client index to remove them on 'close' event
 	var index = clients.push(connection) - 1;
 	// sending the index to the client
-	var json = JSON.stringify({ type:'index', data: index });
-	clients[index].sendUTF(json);
+	//var json = JSON.stringify({ type:'index', data: index });
+	//clients[index].sendUTF(json);
+	console.log(index);
 
-	// remember witch game this client is playing
-	// if no game is started it is null
-	var game = null;
 
 
 	// This is the most important callback for us, we'll handle
 	// all messages from users here.
 	connection.on('message', function(message) {
 		// trying to decode the JSON
-		try {
-			var json = JSON.parse(message.data);
-		} catch (e) {
-			console.log('Invalid JSON: ', message.data);
-			return;
-		}
+		// try {
+		// 	var json = JSON.parse(message.data);
+		// } catch (e) {
+		// 	console.log('Invalid JSON: ', message.data);
+		// 	return;
+		// }
+		console.log("Send message: "+message);
+		clients[gameSelect(index)].send(message);
 
-		if(json.type === 'shoot'){
-			console.log("Shoot from "+index+" at "+column+":"+row);;
-		}
 	// end of onMessage
 	});
 
@@ -64,7 +61,12 @@ wsServer.on('request', function(request) {
 //
 //
 //
-
+function gameSelect(index){
+	if(index%2 == 0){
+		return index+1;
+	}
+	return index-1;
+}
 
 // Send am json message
 //var json = JSON.stringify({ type:'message', data: obj });
