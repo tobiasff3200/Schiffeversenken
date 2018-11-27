@@ -85,7 +85,7 @@ function GameManager(){
                     this.mouseReleasedGame(data.x, data.y);
                 }
             }
-            if(inputTyp == "KeyPresed"){
+            if(inputTyp == "KeyPressed"){
                 if(data != null){
                     this.keyPressedGame(key);
                 }
@@ -109,14 +109,15 @@ function GameManager(){
     
     //keyPressed Methode für den GameManager die von sketch.js aufgerufen wird  
     this.keyPressedGame = function(key){
+        //rotiert das Schiff auf dem die Maus liegt
         if(key == 'r' || key ==  'R'){
             this.rotateShipMouseOver();
         }
-        
+        //speichert die Poition der Schiffe
         if(key == 's' || key == 'S'){
             this.safeShipPosition();
         }
-        
+        //prüft ob beide Spieler "ready" sind
         if(key == 'p' || key == 'P'){
             this.checkGameReadyToPlay();
         }

@@ -23,7 +23,7 @@ function draw() {
 function keyPressed(){
 	gameManager.callInput("KeyPressed", key);
     chat.callInput("KeyPressed", [key, keyCode]);
-}
+}   
 
 function mousePressed(){
     gameManager.callInput("MousePressed", createVector(mouseX, mouseY));
