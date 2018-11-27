@@ -8,8 +8,8 @@ function setup() {
     dataManager = new DataManager();
     chat = new Chat(285, 20, 250, 200);
     gameManager.setup(dataManager);
-    dataManager.setup(gameManager);
     chat.setup();
+    dataManager.setup(gameManager, chat);
 }
 
 function draw() {

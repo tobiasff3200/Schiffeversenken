@@ -4,14 +4,15 @@ function DataManager(){
     this.sendedData = [];
 
 
-    this.setup = function(gameManager){
+    this.setup = function(gameManager, chat){
         this.gameManager = gameManager;
+        this.chat = chat;
     }
     
 	this.randomFloatNotInArray = function(){
 		var number;
         do{
-				number = Math.random();
+            number = Math.random();
 		}
 		while(this.sendedData.indexOf(number)!=-1);
 		return number;
@@ -37,19 +38,30 @@ function DataManager(){
 	}
 
 	this.receiveData = function(input){
-		//if typ == "Reply" -> execute gameManager.receiveReply(data);
-		if(input.type === "Reply"){
-			this.gameManager.receiveReply(input.data);
-		}
-		//if typ == "Ask" && number in sendedData[] -> execute gameManager.receiveResult(data)
-		var index = this.sendedData.indexOf(input.number);
-        if(input.type === "Ask" && index != -1){
-			this.gameManager.receiveResult(input.data);
-            this.sendedData.splice(index, 1);
-		}
-		//if typ == "Ask" && number NOT in sendedData[] -> execute gameManager.receiveQuestion(data)
-		if(input.type === "Ask" && index == -1){
-			this.gameManager.receiveQuestion(input.data, input.number);
-		}
+        //Nachricht an den GameManager
+        if(input.receiver == "GM"){
+            //if typ == "Reply" -> execute gameManager.receiveReply(data);
+            if(input.type === "Reply"){
+                this.gameManager.receiveReply(input.data);
+            }
+            //if typ == "Ask" && number in sendedData[] -> execute gameManager.receiveResult(data)
+            var index = this.sendedData.indexOf(input.number);
+            if(input.type === "Ask" && index != -1){
+                this.gameManager.receiveResult(input.data);
+                this.sendedData.splice(index, 1);
+            }
+            //if typ == "Ask" && number NOT in sendedData[] -> execute gameManager.receiveQuestion(data)
+            if(input.type === "Ask" && index == -1){
+                this.gameManager.receiveQuestion(input.data, input.number);
+            }   
+        }else
+        //Nachricht an den Chat
+        if(input.receiver == "CH"){
+            //wenn reply führe postMsg aus
+            //vermutlich wird es nichts anderes mehr geben als Reply
+            if(input.type === "Reply"){
+                this.chat.postMsg(input.data);
+            }
+        }
 	}
 }
