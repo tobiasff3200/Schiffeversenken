@@ -8,7 +8,7 @@ function DataManager(){
         this.gameManager = gameManager;
         this.chat = chat;
     }
-    
+
 	this.randomFloatNotInArray = function(){
 		var number;
         do{
@@ -23,21 +23,34 @@ function DataManager(){
         var randNum = number;
 		if(type == "Ask" && randNum == null){
             randNum = this.randomFloatNotInArray();
-            this.sendedData.push(number);
+            this.sendedData.push(randNum);
         }
 
-        var json = "{"
-					+"\"number\":\""+number+"\","
-					+"\"receiver\": \""+receiver+"\","
-					+"\"type\": \""+type+"\","
-					+"\"data\": \""+data+"\""
-					+"}";
-        
-        //try to send as JSON
-        this.websocket.connection.send(json);
-	}
+		// var json = '{'
+		// 			+'"number":"'+randNum+'",'
+		// 			+'"receiver": "'+receiver+'",'
+		// 			+'"type": "'+type+'",'
+		// 			+'"data": "'+data+'"'
+		// 			+'}';
+
+		//send as JSON
+		// console.log(json);
+		this.websocket.connection.send(
+			JSON.stringify({ number: randNum, receiver: receiver, type: type, data: data}));
+			console.log(JSON.stringify({ number: randNum, receiver: receiver, type: type, data: data}));
+			// this.websocket.connection.send(json);
+		}
 
 	this.receiveData = function(input){
+		if(!(typeof(input) === 'object')){
+			try {
+				var json = JSON.parse(input);
+			} catch (e) {
+				console.log('Invalid JSON: ', input);
+				console.log(e);
+				return;
+			}
+}
         //Nachricht an den GameManager
         if(input.receiver == "GM"){
             //if typ == "Reply" -> execute gameManager.receiveReply(data);
@@ -53,7 +66,7 @@ function DataManager(){
             //if typ == "Ask" && number NOT in sendedData[] -> execute gameManager.receiveQuestion(data)
             if(input.type === "Ask" && index == -1){
                 this.gameManager.receiveQuestion(input.data, input.number);
-            }   
+            }
         }else
         //Nachricht an den Chat
         if(input.receiver == "CH"){

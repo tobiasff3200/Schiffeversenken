@@ -1,13 +1,10 @@
 function Websocket(DataM){
-    
-    // open connection
-	this.connection = new WebSocket('ws://127.0.0.1:50688');
-	
+
     this.setup = function(){
         this.checkBrowser();
         this.initializeConnection();
     }
-    
+
 	this.checkBrowser = function(){
 		// if user is running mozilla then use it's built-in WebSocket
 		window.WebSocket = window.WebSocket || window.MozWebSocket;
@@ -16,6 +13,9 @@ function Websocket(DataM){
 			alert('Sorry, but your browser doesn\'t support WebSocket.');
 		}
 	}
+
+	// open connection
+	this.connection = new WebSocket('ws://schiffeversenken.ddns.net:1337');
 
 	// catching errors with the connection
 	this.connection.onerror = function (error) {
@@ -30,14 +30,18 @@ function Websocket(DataM){
 	// This event is trigert everytime a message is send from the server
 	this.connection.onmessage = function (message){
 		// trying to decode the JSON
-		try {
-			var json = JSON.parse(message.data);
-		} catch (e) {
-			console.log('Invalid JSON: ', message.data);
-			return;
+		if(!(typeof(message.data) === 'object')){
+			try {
+				var json = JSON.parse(message.data);
+			} catch (e) {
+				console.log('Invalid JSON: ', message);
+				console.log(e);
+				return;
+			}
+		}else{
+			json = message;
 		}
-
 		//this.dataManager.receiveData(json);
-		DataM.receiveData(json);
+		DataM.receiveData(json.utf8Data);
 	}
 }
