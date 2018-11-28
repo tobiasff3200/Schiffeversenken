@@ -42,8 +42,9 @@ wsServer.on('request', function(request) {
 		// 	console.log('Invalid JSON: ', message.data);
 		// 	return;
 		// }
+		var message = JSON.stringify(message);
 		console.log("Send message: "+message);
-		clients[gameSelect(index)].send(message);
+		clients[gameSelect(index)].sendUTF(message);
 
 	// end of onMessage
 	});
