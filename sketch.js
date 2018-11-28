@@ -19,10 +19,15 @@ function draw() {
 }
 
 
-
+//die Methode callInput gibt true zurück wenn sie mit "KeyPressed" aufgerufen wurde
+//dadruch wird sichergestellt, dass wenn man was in den chat schreibt man keine 
+//Tastenkombination vom GameManager aufrufen möchte
+//wird ggf. noch entfernt falls wir uns für buttons entscheiden
 function keyPressed(){
-	gameManager.callInput("KeyPressed", key);
-    chat.callInput("KeyPressed", [key, keyCode]);
+    if(!chat.callInput("KeyPressed", [key, keyCode])){
+        gameManager.callInput("KeyPressed", key);
+    }
+    
 }   
 
 function mousePressed(){

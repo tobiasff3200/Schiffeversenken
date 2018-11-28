@@ -78,7 +78,7 @@ function Chat(x, y, wid, heig){
     //entscheidet welche Inputmethode aufgerufen wird
     this.callInput = function(inputTyp, data){
         if(inputTyp == "KeyPressed"){
-            this.keyPressedChat(data[0], data[1]);
+            return this.keyPressedChat(data[0], data[1]);
         }
         if(inputTyp == "MousePressed"){
             this.mousePressedChat(data.x, data.y);
@@ -109,7 +109,10 @@ function Chat(x, y, wid, heig){
               if(this.msg.equals != "")
                 this.msg = this.msg.substring(0, this.msg.length-1);
             }
+            return true;
         }
+        return false;
+        
     }
     
     //wird aufgerufen wenn due maus aufgerufen wird

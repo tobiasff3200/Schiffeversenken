@@ -1,7 +1,7 @@
 function Websocket(DataM){
     
     // open connection
-	this.connection = new WebSocket('ws://127.0.0.1:1337');
+	this.connection = new WebSocket('ws://127.0.0.1:50688');
 	
     this.setup = function(){
         this.checkBrowser();
