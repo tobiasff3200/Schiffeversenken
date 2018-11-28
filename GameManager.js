@@ -237,7 +237,7 @@ function GameManager(){
             var x = data[0];
             var y = data[1];
             //prüft das Ergebnis
-            var result = checkShootAt(x, y);
+            var result = gameFields[1].checkShootAt(x, y, this.ships);
             if(result != null){
                 //wenn das ergebnis nicht null ist schicke es an den Gegner
                 this.dataManager.send("GM", "Ask", [x, y, result], requestNumber);
@@ -345,4 +345,62 @@ function GameManager(){
             throw "Error while starting";
         }
     }   
+    
+    
+    this.placeShipsRandom = function(){
+        this.placeShipsRandomRec(this.ships.reverse(), this.gameFields[1].centerPoints, 0, 5);
+        this.ships.reverse();
+        for(var ship of this.ships){
+            ship.coverdFields = null;
+        }
+    }
+    
+    
+    this.placeShipsRandomRec = function(ships_, centerPoints, i, rotations){
+        if(i >= ships_.length){
+            return true;
+        }
+        
+        if(0 <= i && i < ships_.length){
+            var center = centerPoints.slice();
+            var x; 
+            var y;
+            var result;
+            var curRotation = 0;
+            do{
+                x = floor(random(0, center.length-1));
+                y = floor(random(0, center[x].length-1));
+                if(center[x][y] == null){
+                    continue;
+                }
+                this.setPos(ships_[i], center[x][y].x, center[x][y].y);
+                result = ships_[i].checkValidPosition(this.ships);
+                center = this.removeIndexFromArray(center, x, y);
+                curRotation++;
+                if(result && this.placeShipsRandomRec(ships_, center, i+1, rotations)){
+                    return true;
+                }     
+            }while(curRotation < rotations)
+            return false;
+        }
+    }
+    
+    this.setPos = function(ship, x, y){
+        ship.setPositionInPixel(x, y, this.gameFields[1]);
+        if(random() > 0.5){
+            ship.rotate(this.gameFields[1]);
+        }
+        ship.setCoverdFields();
+    }
+    
+    this.removeIndexFromArray = function(center, x, y){
+        var arrayToShort = center.slice();
+        var rowToShort = arrayToShort[x];
+        
+        var rowZeroToY = rowToShort.slice(0, y)
+        var rowYToEnd  = rowToShort.slice(y+1);
+        var newRow = rowZeroToY.concat(rowYToEnd);
+        arrayToShort[x] = newRow; 
+        return arrayToShort;
+    }
 }
