@@ -35,7 +35,7 @@ function GameManager(){
     this.gameEnd = false;
     //zeigt an ob momentan auf eine antwort vom server gewartet wird (blockiert alle inputs)
     this.waitingForServer = false;
-    
+
     //initialiesiert alles wichtige für das Spiel
     //GameFields und Schiffe und ruft deren setup's auf
     this.setup = function(){
@@ -49,7 +49,7 @@ function GameManager(){
             this.ships[i].setup();
         }
     }
-    
+
     //zeichnet die GameInhalte in der richtigen Reihenfolge,
     //damit die Felder unter den Schiffen und die Schiffe unter den Schüssen sind
     this.show = function(){
@@ -58,21 +58,21 @@ function GameManager(){
         this.gameFields[1].showField();
         //zeichnet SChiffe
         for(var ship of this.ships){
-            //prüft ob das Schiff grade bewegt wird, wenn ja wird es auf 
+            //prüft ob das Schiff grade bewegt wird, wenn ja wird es auf
             //der Maus Platziert
             if(ship.dragging){
-               ship.setPositionInPixel(mouseX, mouseY, this.gameFields[1]); 
+               ship.setPositionInPixel(mouseX, mouseY, this.gameFields[1]);
             }
             ship.show();
         }
         //zeichnet die Schüsse
         for(var game of this.gameFields){
-            game.showShots();	
+            game.showShots();
         }
     }
-    
+
 //-----------------------------------------inputs------------------------------------------//
-    
+
     this.callInput = function(inputTyp, data){
         if(!this.waitingForServer && !this.gameEnd){ // && this.gameTurn%2 == (je nach Spieler)
             if(inputTyp == "MousePressed"){
@@ -92,7 +92,7 @@ function GameManager(){
             }
         }
     }
-    
+
     //mousePressed Methode für den GameManager die von sketch.js aufgerufen wird
     this.mousePressedGame = function(mouseX, mouseY){
         //es wird zuerst gegrüft ob man ein Schiff hoch nimmt, da man nicht
@@ -101,28 +101,28 @@ function GameManager(){
             this.shootAtClickedField(mouseX, mouseY, this.gameFields[0]);
         }
     }
-    
-    //mouseReleased Methode für den GameManager die von sketch.js aufgerufen wird  
+
+    //mouseReleased Methode für den GameManager die von sketch.js aufgerufen wird
     this.mouseReleasedGame = function(mouseX, mouseY){
         this.dropDraggingShips();
     }
-    
-    //keyPressed Methode für den GameManager die von sketch.js aufgerufen wird  
+
+    //keyPressed Methode für den GameManager die von sketch.js aufgerufen wird
     this.keyPressedGame = function(key){
         if(key == 'r' || key ==  'R'){
             this.rotateShipMouseOver();
         }
-        
+
         if(key == 's' || key == 'S'){
             this.safeShipPosition();
         }
-        
+
         if(key == 'p' || key == 'P'){
             this.checkGameReadyToPlay();
         }
     }
 //-----------------------------------------inputs------------------------------------------//
-    
+
     //setzt die Var Dragging des angeklicketen Schiffes auf true, sodass es
     //in der show methode bewegt werden kann. Man kann nur ein Schiff bewegen
     //Es wird immer das oberste Schiff genommen
@@ -147,19 +147,19 @@ function GameManager(){
             if(ship.dragging){
                 ship.dragging = false;
             }
-        } 
+        }
     }
-    
+
     //rotiert das Schiff über dem die Mouse drüber ist
     this.rotateShipMouseOver = function(){
         for(var ship of this.ships){
             if(ship.checkMouseInside()){
                 ship.rotate(this.gameFields[1]);
-            }   
+            }
         }
     }
-    
-    //checkt ob alle Schiffe auf einem akzeptierten Feld stehen und 
+
+    //checkt ob alle Schiffe auf einem akzeptierten Feld stehen und
     //Position speichter diese
     this.safeShipPosition = function(){
         this.shipPosSafed = true;
@@ -176,13 +176,13 @@ function GameManager(){
             for(var ship of this.ships){
                 ship.coverdFields = null;
             }
-            alert("Die Schiffe sind nicht richtig platziert worden, \n" + 
+            alert("Die Schiffe sind nicht richtig platziert worden, \n" +
                   "Bitte beachten Sie die Regeln");
         }
         return this.shipPosSafed;
     }
-    
-    //prüft ob alle Schiffe versenkt wurden, wenn ja sendet er es an den gegner 
+
+    //prüft ob alle Schiffe versenkt wurden, wenn ja sendet er es an den gegner
     //und beendet das spiel
     this.checkWin = function(){
         //wenn genauso viele (oder mehr) Schiffe versenkt wurden wie es Schiffe gibt,
@@ -196,20 +196,20 @@ function GameManager(){
             return false;
         }
     }
-    
+
     //prüft im übergebenen GameField auf welches Feld geklickt wurde und
     //falls eins gefunden wird, auf das noch nicht geschossen wurde, wird darauf geschossen
     this.shootAtClickedField = function(xPix, yPix, game){
         var fieldInizes  = game.convertPixPosInFieldIndex(xPix, yPix);
         //prüft ob das Feld existiert und ob es noch nicht beschossen wurde
         if(fieldInizes != null && game.fieldStates[fieldInizes.x][fieldInizes.y] == EMPTY){
-            //sende position an Server, und setzte waitingForServer auf true sodass alle 
+            //sende position an Server, und setzte waitingForServer auf true sodass alle
             //inputs geblocked werden
             this.dataManager.send("GM", "Ask", [fieldInizes.x, fieldInizes.y]);
             this.waitingForServer = true;
         }
     }
-    
+
     //wird aufgerufen wenn der Gegner eine Anfrage geschickt hat
     this.receiveQuestion = function(data, requestNumber){
         //prüft ob die Daten vorhanden und in der richtigen größe sind
@@ -226,7 +226,7 @@ function GameManager(){
             }
         }
     }
-    
+
     //wird aufgerufen, wenn der Gegner ein Ergebnis der Anfrage geschickt hat
     this.receiveResult = function(data){
         //prüft ob die daten vorhanden sind und die richtige größe haben
@@ -266,7 +266,7 @@ function GameManager(){
             this.waitingForServer = false;
         }
     }
-    
+
     //wird aufgerufen wenn der Gegner eine Antwort geschickt hat
     this.receiveReply = function(data){
         if(data != null){

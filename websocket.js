@@ -15,7 +15,7 @@ function Websocket(DataM){
 	}
 
 	// open connection
-	this.connection = new WebSocket('ws://127.0.0.1:1337');
+	this.connection = new WebSocket('ws://schiffeversenken.ddns.net:1337');
 
 	// catching errors with the connection
 	this.connection.onerror = function (error) {
