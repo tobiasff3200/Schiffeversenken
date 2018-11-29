@@ -42,9 +42,11 @@ function DataManager(){
 		}
 
 	this.receiveData = function(input){
-		if(!(typeof(input) === 'object')){
+		print("ich war hier");
+        var json;
+        if(!(typeof(input) === 'object')){
 			try {
-				var json = JSON.parse(input);
+				json = JSON.parse(input);
 			} catch (e) {
 				console.log('Invalid JSON: ', input);
 				console.log(e);
@@ -52,31 +54,31 @@ function DataManager(){
 			}
         }
         
-        console.log(JSON.stringify({ number: input.randNum, receiver: input.receiver, type: input.type, data: input.data}));
+        console.log(json);
         
         //Nachricht an den GameManager
-        if(input.receiver == "GM"){
+        if(json.receiver == "GM"){
             //if typ == "Reply" -> execute gameManager.receiveReply(data);
-            if(input.type === "Reply"){
-                this.gameManager.receiveReply(input.data);
+            if(json.type === "Reply"){
+                this.gameManager.receiveReply(json.data);
             }
             //if typ == "Ask" && number in sendedData[] -> execute gameManager.receiveResult(data)
             var index = this.sendedData.indexOf(input.number);
-            if(input.type === "Ask" && index != -1){
+            if(json.type === "Ask" && index != -1){
                 this.gameManager.receiveResult(input.data);
                 this.sendedData.splice(index, 1);
             }
             //if typ == "Ask" && number NOT in sendedData[] -> execute gameManager.receiveQuestion(data)
-            if(input.type === "Ask" && index == -1){
-                this.gameManager.receiveQuestion(input.data, input.number);
+            if(json.type === "Ask" && index == -1){
+                this.gameManager.receiveQuestion(json.data, json.number);
             }
         }else
         //Nachricht an den Chat
-        if(input.receiver == "CH"){
+        if(json.receiver == "CH"){
             //wenn reply führe postMsg aus
             //vermutlich wird es nichts anderes mehr geben als Reply
-            if(input.type === "Reply"){
-                this.chat.postMsg(input.data);
+            if(json.type === "Reply"){
+                this.chat.postMsg(json.data);
             }
         }
 	}

@@ -237,7 +237,7 @@ function GameManager(){
             var x = data[0];
             var y = data[1];
             //prüft das Ergebnis
-            var result = gameFields[1].checkShootAt(x, y, this.ships);
+            var result = this.gameFields[1].checkShootAt(x, y, this.ships);
             if(result != null){
                 //wenn das ergebnis nicht null ist schicke es an den Gegner
                 this.dataManager.send("GM", "Ask", [x, y, result], requestNumber);

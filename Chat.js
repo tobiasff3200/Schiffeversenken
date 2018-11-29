@@ -101,8 +101,8 @@ function Chat(x, y, wid, heig){
             }
             //wenn enter gedrückt wurde sende die nachricht
             if(keyCode == ENTER){
-                this.printMsg(); 
                 dataManager.send("CH", "Reply", this.msg);
+                this.printMsg();
             }
             //lösche den letzten buchstaben wenn Backspace gedrückt wurde
             if(keyCode == BACKSPACE){
