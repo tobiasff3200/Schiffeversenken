@@ -50,7 +50,10 @@ function DataManager(){
 				console.log(e);
 				return;
 			}
-}
+        }
+        
+        console.log(JSON.stringify({ number: input.randNum, receiver: input.receiver, type: input.type, data: input.data}));
+        
         //Nachricht an den GameManager
         if(input.receiver == "GM"){
             //if typ == "Reply" -> execute gameManager.receiveReply(data);
