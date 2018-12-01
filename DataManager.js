@@ -53,11 +53,9 @@ function DataManager(){
                 this.gameManager.receiveReply(json.data);
             }
             //if typ == "Ask" && number in sendedData[] -> execute gameManager.receiveResult(data)
-            print(this.sendedData);
-            var index = this.sendedData.indexOf(input.number);
-            print("Ist code im Array?  " + index);
+            var index = this.sendedData.indexOf(json.number);
             if(json.type === "Ask" && index != -1){
-                this.gameManager.receiveResult(input.data);
+                this.gameManager.receiveResult(json.data);
                 this.sendedData.splice(index, 1);
             }
             //if typ == "Ask" && number NOT in sendedData[] -> execute gameManager.receiveQuestion(data)

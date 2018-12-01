@@ -201,15 +201,12 @@ function GameManager(){
         }
     }
 
-    //prüft ob alle Schiffe versenkt wurden, wenn ja sendet er es an den gegner
-    //und beendet das spiel
+    //prüft ob alle Schiffe versenkt wurden
     this.checkWin = function(){
         //wenn genauso viele (oder mehr) Schiffe versenkt wurden wie es Schiffe gibt,
         //dann hat man gewonnen
-        if(gameScore >= SHIPLENGTH){
+        if(this.gameScore >= SHIPLENGTH.length){
             this.gameEnd = true;
-            //der Gegner wird informiert dass er verloren hat
-            this.dataManager.send("GM", "Reply", "Finish");
             return true;
         }else{
             return false;
@@ -251,35 +248,39 @@ function GameManager(){
     this.receiveResult = function(data){
         //prüft ob die daten vorhanden sind und die richtige größe haben
         if(data != null && data.length >= 3){
-            var result = data[2];
             var x = data[0];
             var y = data[1];
+            var result = data[2];
             //verarbeitet das Ergebnis der Anfrage
             if(data[2] == MISS){
                 //bei daneben :
                 //setzte Status des Feldes auf MISS
-                gameFields[0].setState(x, y, MISS);
+                this.gameFields[0].setState(x, y, MISS);
                 //sag dem Server der andere Spieler ist dran
                 this.dataManager.send("GM", "Reply", [NEXTTURN]);
+                alert("You miss. Nextturn!");
                 //erhöht die momentane Runde um 1 (gameTurn)
                 this.gameTurn++;
             }else if(data[2] >= HIT){
                 //mindestens ein Treffer:
                 //setzte Status des Feldes auf HIT
-                gameFields[0].setState(x, y, HIT);
-                if(data[2] == DESTROEYED){
+                this.gameFields[0].setState(x, y, HIT);
+                if(data[2] == DESTROYED){
                     //sollte das Schiff versenkt worden sein erhöhe den gameScore
                     this.gameScore++;
-                }
-                //da man getroffen hat darf man nochmal schießen, deswegen wird die momentane
-                //Runde nicht erhöht
-                //sollte man gewonnen haben, wird der gegner benachrichtigt und das Spiel beendet
-                if(this.checkWin()){
-                    this.dataManager.send("GM", "Reply", ["Finish"]);
-                    this.gameEnd = true;
-                    alert("You've won the Game!");
+                    //da man getroffen hat darf man nochmal schießen, deswegen wird die momentane
+                    //Runde nicht erhöht
+                    //sollte man gewonnen haben, wird der gegner benachrichtigt und das Spiel beendet
+                    if(this.checkWin()){
+                        this.dataManager.send("GM", "Reply", ["Finish"]);
+                        this.gameEnd = true;
+                        alert("Last ship destroyed, You've won the Game!");
+                    }else{
+                        //die anzahl aller Schiffe minus die schon zerstörten Schiffe = die restlichen Schiffe
+                        alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left");
+                    }
                 }else{
-                    alert("You hit a ship. Shoot another one!");
+                    alert("You hit a Ship! Shoot another one!");
                 }
             }
             //es wird nicht mehr auf den Server gewartet
