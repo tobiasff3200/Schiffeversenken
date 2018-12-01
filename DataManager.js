@@ -12,7 +12,7 @@ function DataManager(){
 	this.randomFloatNotInArray = function(){
 		var number;
         do{
-            number = Math.random();
+            number = Math.floor(Math.random()*100);
 		}
 		while(this.sendedData.indexOf(number)!=-1);
 		return number;
@@ -26,23 +26,13 @@ function DataManager(){
             this.sendedData.push(randNum);
         }
 
-		// var json = '{'
-		// 			+'"number":"'+randNum+'",'
-		// 			+'"receiver": "'+receiver+'",'
-		// 			+'"type": "'+type+'",'
-		// 			+'"data": "'+data+'"'
-		// 			+'}';
-
-		//send as JSON
-		// console.log(json);
 		this.websocket.connection.send(
 			JSON.stringify({ number: randNum, receiver: receiver, type: type, data: data}));
-			console.log(JSON.stringify({ number: randNum, receiver: receiver, type: type, data: data}));
+			console.log("Erfolgreich gesendet: " + JSON.stringify({ number: randNum, receiver: receiver, type: type, data: data}));
 			// this.websocket.connection.send(json);
 		}
 
 	this.receiveData = function(input){
-		print("ich war hier");
         var json;
         if(!(typeof(input) === 'object')){
 			try {
@@ -53,7 +43,7 @@ function DataManager(){
 				return;
 			}
         }
-        
+        print("Empfangen:");
         console.log(json);
         
         //Nachricht an den GameManager
@@ -63,7 +53,9 @@ function DataManager(){
                 this.gameManager.receiveReply(json.data);
             }
             //if typ == "Ask" && number in sendedData[] -> execute gameManager.receiveResult(data)
+            print(this.sendedData);
             var index = this.sendedData.indexOf(input.number);
+            print("Ist code im Array?  " + index);
             if(json.type === "Ask" && index != -1){
                 this.gameManager.receiveResult(input.data);
                 this.sendedData.splice(index, 1);

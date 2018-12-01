@@ -236,7 +236,7 @@ function GameManager(){
         if(data != null && data.length >= 2){
             var x = data[0];
             var y = data[1];
-            //prüft das Ergebnis
+            //prüft das Ergebnis und zeichnet es
             var result = this.gameFields[1].checkShootAt(x, y, this.ships);
             if(result != null){
                 //wenn das ergebnis nicht null ist schicke es an den Gegner
@@ -258,7 +258,7 @@ function GameManager(){
             if(data[2] == MISS){
                 //bei daneben :
                 //setzte Status des Feldes auf MISS
-                GameField.setState(x, y, MISS);
+                gameFields[0].setState(x, y, MISS);
                 //sag dem Server der andere Spieler ist dran
                 this.dataManager.send("GM", "Reply", [NEXTTURN]);
                 //erhöht die momentane Runde um 1 (gameTurn)
@@ -317,6 +317,7 @@ function GameManager(){
                 //Das Spiel hat gestartet
                 this.enemyReady = true;
                 this.gameStarted = true;
+                alert("The Game has started");
             }else
                 if(data[0] == "Finish"){
                 //der Gegner hat gewonnen, wenn er "Finish" schickt
