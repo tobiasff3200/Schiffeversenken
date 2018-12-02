@@ -109,12 +109,13 @@ function GameField(x, y, wid, heig){
                 for(var ship of ships){           
                     if(ship.coverdFields != null && ship.checkHit(x, y, this)){
                         this.fieldStates[x][y] = HIT;
-                        return true;
+                        //gib zurück ob das Schiff zerstört wurde oder nur getroffen 
+                        return (ship.checkDown()) ? DESTROYED : HIT;
                     }
                 }
                 //falls kein Schiff gefunden setzt Status auf daneben und gibt es zurück
                 this.fieldStates[x][y] = MISS;
-                return false;
+                return MISS;
             }
         }
         //das Feld ist bereits belegt oder exestiert garnicht und es wird abgebrochen

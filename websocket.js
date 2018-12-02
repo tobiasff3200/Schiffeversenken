@@ -29,7 +29,7 @@ function Websocket(DataM){
 
 	// This event is trigert everytime a message is send from the server
 	this.connection.onmessage = function (message){
-		// trying to decode the JSON
+        // trying to decode the JSON
 		if(!(typeof(message.data) === 'object')){
 			try {
 				var json = JSON.parse(message.data);
