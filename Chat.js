@@ -29,6 +29,7 @@ function Chat(x, y, wid, heig){
     
     //zum darstellen des Textes und des Chats
     this.show = function(){
+        push();
         //übersetzt den Ursprung auf die Mitte des Feldes
         translate(x+wid/2, y+heig/2);
         //setzt die Textanlehnung auf Links und Unten
@@ -64,13 +65,14 @@ function Chat(x, y, wid, heig){
         //für jeden inhalt im Chat eine neue Zeile
         for(var i = 0; i < this.chat.length; i++){
             //darf icht größer sein als das TextField
-            if(heig*0.35-(this.heightT)*(this.chat.length-i) > -heig/2){
+            if(heig*0.35-(this.heightT)*(this.chat.length-i) > -heig/2.5){
                 //bekommt noch eine Nummer zugewiesen
                 text((i+1)+": "+this.chat[i], -wid*0.45, heig*0.35-(this.heightT)*(this.chat.length-i));
             }
         }
         //übersetzte den ursprung zurück auf 0,0
         translate(0, 0);
+        pop();
     }
     
 //---------------------------inputs--------------------------------//
