@@ -129,11 +129,15 @@ function Chat(x, y, wid, heig){
         }
     }
     
-    //um die scrollDown function zu unterbinden
+    //um die scrollDown und die leaveSite Function zu unterbinden
     window.onkeydown = function(e) {
       if (e.keyCode == 32 && e.target == document.body) {
         e.preventDefault();
       }
+      if (e.keyCode == 8 && e.target == document.body) {
+        e.preventDefault();
+      }
+        
     };
     
 //---------------------------inputs--------------------------------//

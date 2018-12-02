@@ -2,7 +2,7 @@
 //Def die Menge und länge der Schiffe
 const SHIPLENGTH = [2, 2, 2, 2, 3, 3, 3, 4, 4, 5];
 //Simbol dass der andere dran ist --nur zum senden an den Server
-const NEXTTURN = 5;
+const NEXTTURN = "Nextturn";
 //versenktes Schiff --nur zum senden an den Server
 const DESTROYED = 2;
 //getroffenes Schiff
@@ -29,7 +29,12 @@ function GameManager(){
     //simbolisiert ob die Spieler bereit sind oder nicht
     this.youReady = false;
     this.enemyReady = false;
-    //speichert den aktuellen zug - n%2 == 0 -> spieler1 , n%2 != 0 -> spieler2
+    //speichert den aktuellen zug - n%2 == 0 => man darf schießen
+    //das wird durch denjenigen der später bereit drückt zufällig entschieden wer als erstes dran ist und
+    //an den gegner geschickt, der seine "Start Runde", dahingehend verändert. Das heißt wenn man
+    //als erster dran ist bleibt gameTurn bei 0 aber wenn der gegner zuerst dran ist wird 
+    //gameTurn auf 1 gesetzt sodass sie immer unterschiedlich von einander sein (abstand 1)
+    //das führt dazu dass in der einen Runde %2 bei dem einen funktioniert und in der nächsten Runde bei dem andere
     this.gameTurn = 0;
     //speichert die Punkte eines Spielers. Bei jedem versenkten schiff wird er um eins erhöt
     //bis er die größe des Arrays der vorhandenen Schiffe hat -dann hat der spieler gewonnen
@@ -75,7 +80,7 @@ function GameManager(){
 //-----------------------------------------inputs------------------------------------------//
 //                                          \\//
     this.callInput = function(inputTyp, data){
-        if(!this.waitingForServer){ // && this.gameTurn%2 == (je nach Spieler)
+        if(!this.waitingForServer && this.gameTurn%2 == 0){ 
             if(inputTyp == "MousePressed"){
                 if(data.x != null && data.y != null){
                     this.mousePressedGame(data.x, data.y);
@@ -168,6 +173,10 @@ function GameManager(){
     //checkt ob alle Schiffe auf einem akzeptierten Feld stehen und
     //Position speichter diese
     this.safeShipPosition = function(){
+        //wenn die schiffe schon gespeichert wurden kann man abbrechen
+        if(this.shipPosSafed){
+            return
+        }
         this.shipPosSafed = true;
         for(var ship of this.ships){
             //checkValidPosition speichert die Position und prüft ob sie ok ist
@@ -195,7 +204,7 @@ function GameManager(){
     this.checkGameReadyToPlay = function(){
         //wenn alle Schiffe richtig stehen wird der Spieler auf ready gesetzt
         //und der gegner wird informiert
-        if(this.shipPosSafed){
+        if(!this.gameStarted && this.shipPosSafed){
             this.youReady = true;
             this.sendReady();
         }
@@ -298,15 +307,10 @@ function GameManager(){
                 this.waitingForServer = false;
                 alert("Its your turn!");
             }else
-
-            if(data == "Ready"){
+            if(data[0] == "Ready"){
                 if(this.youReady){
-                    //wenn der Spieler schon ready ist und vom gegner ein
-                    //Ready kommt wird start an den gegner gesendet
-                    this.dataManager.send("GM", "Reply", "Start");
                     this.enemyReady = true;
-                    this.gameStarted = true;
-                    alert("The Game has started");
+                    this.sendReady();
                 }else{
                     //wenn nicht wird der Gegner auf Ready gesetzt und
                     //dem Spieler wird mitgeteilt dass der Gegner ready ist
@@ -314,11 +318,13 @@ function GameManager(){
                     this.enemyReady = true;
                 }
             }else
-            if(data == "Start" && this.youReady){
+            if(data[0] == "Start" && this.youReady){
                 //Das Spiel hat gestartet
                 this.enemyReady = true;
                 this.gameStarted = true;
-                alert("The Game has started");
+                this.gameTurn = data[1];
+                var turnMsg = (this.gameTurn%2==0) ? "You go first!" : "Enemy goes first!";
+                alert("The Game has started! " + turnMsg);
             }else
                 if(data[0] == "Finish"){
                 //der Gegner hat gewonnen, wenn er "Finish" schickt
@@ -328,17 +334,25 @@ function GameManager(){
     }
 
     //soll dem gegner sagen ob der Spieler bereit ist, bzw das Spiel gestartet hat
-    this.sendReady = function(data){
+    this.sendReady = function(){
         if(this.youReady){
             if(this.enemyReady){
-                //wenn beide bereit sind kann gestartet werden
-                this.dataManager.send("GM", "Reply", "Start");
+                //wenn beide bereit sind wird zufällig entscheiden wer anfängt und es kann gestartet werden
+                //eine zufallszahl wird generiert, welche entscheidet wer anfängt
+                var first = (Math.random()>0.5) ? "You" : "Enemy";
+                //sollte der Spieler anfangen bleibt gameTurn 0, wenn nicht wird es auf 1 gesetzt
+                //da man nur "schießen" kann wenn gameTurn%2==0 ist 
+                this.gameTurn = (first == "You") ? 0 : 1;
+                //für den Gegner gilt genau das gleiche nur umgedreht und es wird ihm gesendet
+                var enemeyTurn = (first == "Enemy") ? 0 : 1;
+                this.dataManager.send("GM", "Reply", ["Start", enemeyTurn]);
                 this.gameStarted = true;
-                alert("The game has started");
+                var turnMsg = (this.gameTurn%2==0) ? "You go first!" : "Enemy goes first!";
+                alert("The game has started! " + turnMsg);
             }else{
                 //wenn der Gegner noch nicht bereit wird ihm mitgeteilt, dass der
                 //Speiler bereit ist
-                this.dataManager.send("GM", "Reply", "Ready");
+                this.dataManager.send("GM", "Reply", ["Ready"]);
                 alert("Waiting for enemy");
             }
         }else{
