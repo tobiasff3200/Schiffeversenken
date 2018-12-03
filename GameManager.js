@@ -18,6 +18,8 @@ function GameManager(){
     
     //ist für die verarbeitung und das senden der Daten verantwortlich
     this.dataManager = null;
+    //ist für die darstellung des GameLog verandwortlich
+    this.gameLog = null;
     //Speichert alle Schiffe
     this.ships = [];
     //Speichert die beiden gameFields - 0 = oben 1 = unten
@@ -48,8 +50,10 @@ function GameManager(){
         this.dataManager = dataManager;
         this.gameFields[0] = new GameField(20, 20, 10, 10);
         this.gameFields[1] = new GameField(20, 240, 10, 10);
+        this.gameLog = new GameLog(260, 240, 300, 140);
         this.gameFields[0].setup();
         this.gameFields[1].setup();
+        this.gameLog.setup();
         for(var i = 0; i < SHIPLENGTH.length; i++){
             this.ships[i] = new Ship(30+(SIZE)*i, 500, SHIPLENGTH[i]);
             this.ships[i].setup();
@@ -62,6 +66,7 @@ function GameManager(){
         //zeichnet die GameFields
         this.gameFields[0].showField();
         this.gameFields[1].showField();
+        this.gameLog.show();
         //zeichnet SChiffe
         for(var ship of this.ships){
             //prüft ob das Schiff grade bewegt wird, wenn ja wird es auf
@@ -245,6 +250,8 @@ function GameManager(){
             //prüft das Ergebnis und zeichnet es
             var result = this.gameFields[1].checkShootAt(x, y, this.ships);
             if(result != null){
+                //postet die Nachricht bei dem Schuss des Gegners passiert ist
+                this.gameLog.postMsg(x, y, result, this.gameTurn);
                 //wenn das ergebnis nicht null ist schicke es an den Gegner
                 this.dataManager.send("GM", "Ask", [x, y, result], requestNumber);
                 //es wird nicht mehr auf den Server gewartet
@@ -267,6 +274,8 @@ function GameManager(){
                 this.gameFields[0].setState(x, y, MISS);
                 //sag dem Server der andere Spieler ist dran
                 this.dataManager.send("GM", "Reply", [NEXTTURN]);
+                //postet die Nachricht dass nichts getroffen wrude
+                this.gameLog.postMsg(x, y, MISS, this.gameTurn);
                 alert("You miss. Nextturn!");
                 //erhöht die momentane Runde um 1 (gameTurn)
                 this.gameTurn++;
@@ -285,10 +294,14 @@ function GameManager(){
                         this.gameEnd = true;
                         alert("Last ship destroyed, You've won the Game!");
                     }else{
+                        //postet die Nachricht dass ein Schiff zerstört wurde im gameLog
+                        this.gameLog.postMsg(x, y, DESTROYED, this.gameTurn);
                         //die anzahl aller Schiffe minus die schon zerstörten Schiffe = die restlichen Schiffe
                         alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left");
                     }
                 }else{
+                    //postet die Nachricht dass ein Schiff getroffen wurde im gameLog
+                    this.gameLog.postMsg(x, y, HIT, this.gameTurn);
                     alert("You hit a Ship! Shoot another one!");
                 }
             }
@@ -324,7 +337,7 @@ function GameManager(){
                 this.gameStarted = true;
                 this.gameTurn = data[1];
                 var turnMsg = (this.gameTurn%2==0) ? "You go first!" : "Enemy goes first!";
-                alert("The Game has started! " + turnMsg);
+                alert("The Game has started! " + turnMsg);   
             }else
                 if(data[0] == "Finish"){
                 //der Gegner hat gewonnen, wenn er "Finish" schickt
@@ -362,60 +375,101 @@ function GameManager(){
         }
     }
 
-
+    //zum aufrufen der rekusiven Methode und zum zurücksetzten der Speicherung die 
+    //bei dem rekusiven Algorithmus benötigt wird
     this.placeShipsRandom = function(){
+        //ruft die Methode mit dem umgedrehten array Ships auf, damit es mit dem größten startet
         this.placeShipsRandomRec(this.ships.reverse(), this.gameFields[1].centerPoints, 0, 5);
         this.ships.reverse();
+        //setzt die gespeicherten Felder wieder auf null damit man die Schiffe noch bewegen kann 
         for(var ship of this.ships){
             ship.coverdFields = null;
         }
     }
 
 
+    //die rekursive Methode zum zufälligen setzten der Schiffe
+    //Parameter : 1. Das array mit den Schiffen, 2. die mittelpunkte,
+    //            3. die momentane iteration, 4. die maximalen versuche eine Schiff zu positionieren
+    //               bevor abgebrochen wird und das Schiff, welches davor plaziert wurde umgesetzt wird
     this.placeShipsRandomRec = function(ships_, centerPoints, i, rotations){
+        //wenn alle Schiffe plaziert wurden return true
         if(i >= ships_.length){
             return true;
         }
-
+        //prüft ob i einen validen wert hat
         if(0 <= i && i < ships_.length){
+            //kopiert das Array der mittelpunkte, damit wir sie ohne bedenken löschen können
             var center = centerPoints.slice();
+            //initialisiert restliche hilfvariablen
             var x;
             var y;
             var result;
             var curRotation = 0;
+            //while oder do-while ist mehr oder weniger egal 
+            //aus vorheriger version wurde do-While behalten 
             do{
+                //zufälliges x und y erzeugt (floor "rundet" auf eine ganze Zahl)
                 x = floor(random(0, center.length-1));
                 y = floor(random(0, center[x].length-1));
+                //wenn etwas nicht funktioniert hat wird es nochmal versucht
                 if(center[x][y] == null){
                     continue;
                 }
+                //setzt das Schiff auf die übergebenen Koordinaten
                 this.setPos(ships_[i], center[x][y].x, center[x][y].y);
+                //prüft ob das neue Schiff den schon gesetzten Schiffen in die quere kommt
                 result = ships_[i].checkValidPosition(this.ships);
+                //entfernt die Position aus dem Array der Mittelpunkte damit wir eine endliche
+                //Menge an möglichkeiten zum plazieren der Schiffe haben
+                //sollten wir einen schritt zurück gehen steht das alte Array mit den bisdahing 
+                //noch nicht benutzten Mittelpunkten noch zur verfügung da wir am anfang eine Kopie gemacht haben
                 center = this.removeIndexFromArray(center, x, y);
-                curRotation++;
+                //wenn das Schiff auf einer Validen Position steht, wird die Rekusion aufgerufen
+                //Wenn die Rekursion ohne fehler durch laufen kann ist die if-Bedingung true
+                //und wir können sicher sein dass alle Schiffe richtig plaziert wurde
                 if(result && this.placeShipsRandomRec(ships_, center, i+1, rotations)){
                     return true;
                 }
+                //sollte das Schiff an keiner Validen Position stehen erhöhen wir den counter 
+                //und versuchen es an einer andere Position
+                curRotation++;
+                //es werden soviele Positionen versucht wie rotations groß ist
             }while(curRotation < rotations)
+            //sollte garkeine Position passen wird false zurück gegeben
             return false;
         }
     }
 
+    //setzt die Position an die x & y Koordonaten die Übergeben wurden
     this.setPos = function(ship, x, y){
+        //setzt das Schiff auf x & y ins unsere GameField
         ship.setPositionInPixel(x, y, this.gameFields[1]);
+        //es besteht eine 50% chance, dass das Schiff noch gedreht wird; 
         if(random() > 0.5){
             ship.rotate(this.gameFields[1]);
         }
+        //am ende werden die Felder die belegt wurden gespeichert, damit man das Schiff mit den
+        //anderen Schiffen die schon stehen oder die noch kommen werden vergleichen kann
+        //das wird in der "Hauptmethode" wieder rückgängig gemacht
         ship.setCoverdFields();
     }
-
+    
+    //die Methode removed ein spezielles Element aus einem 2D Array
     this.removeIndexFromArray = function(center, x, y){
+        //das array wird kopiert
         var arrayToShort = center.slice();
+        //es wird die Reihe die gekürt werden soll festgelegt
         var rowToShort = arrayToShort[x];
 
+        //alle werte von 0 - (y-1) werden aus der ausgewählten Reihe in eine HilfsV geschrieben
         var rowZeroToY = rowToShort.slice(0, y)
+        //alle werte von (y+1) - ende werden aus der ausgewälten Reihe in eine HilfsV geschrieben
         var rowYToEnd  = rowToShort.slice(y+1);
+        //das für dazu dass es in der neuen Zeile das Element an der Position Y nicht mehr gibt
         var newRow = rowZeroToY.concat(rowYToEnd);
+        //das ersezten der neune Zeile X duch die alte Zeile X führt dazu dass das gleiche Array
+        //ohne das Element X,Y zurückgegeben wird
         arrayToShort[x] = newRow;
         return arrayToShort;
     }

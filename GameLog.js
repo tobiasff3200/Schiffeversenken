@@ -21,7 +21,7 @@ function GameLog(x, y, wid, heig){
         //übersetzt den Ursprung auf die Mitte des Feldes
         translate(x+wid/2, y+heig/2);
         //setzt die Textanlehnung auf Links und Unten
-        textAlign(LEFT, BOTTOM);
+        textAlign(CENTER, BOTTOM);
         //es soll normal geschrieben werden
         textStyle(NORMAL);
                
@@ -36,9 +36,9 @@ function GameLog(x, y, wid, heig){
         //für jeden inhalt im Chat eine neue Zeile
         for(var i = 0; i < this.chat.length; i++){
             //darf icht größer sein als das TextField
-            if(heig*0.35-(this.heightT)*(this.chat.length-i) > -heig/3){
-                //bekommt noch eine Nummer zugewiesen
-                text(this.chat[i], -wid*0.45, heig*0.35-(this.heightT)*(this.chat.length-i));
+            if(heig/1.8-(this.heightT)*(this.chat.length-i) > -heig/3){
+                textAlign(this.chat[i][1]%2==0 ? RIGHT : LEFT);
+                text(this.chat[i][0], 0, heig/2.1-(this.heightT)*(this.chat.length-i), wid-20, this.heightT);
             }
         }
         //übersetzte den ursprung zurück auf 0,0
@@ -48,7 +48,12 @@ function GameLog(x, y, wid, heig){
     
     //schreibt die ÜBERGEBENE Nachricht in den chat, ohne dass man
     //eine nachricht schreiben muss
-    this.postMsg = function(msg_){
-        this.chat.push(msg_);
+    this.postMsg = function(x, y, result, turn){
+        var xString = (x<fieldNumbers.length) ? fieldNumbers[x] : null;
+        var yString = (y<fieldChars.length) ? fieldChars[y] : null;
+        var playerS = (turn%2==0) ? "You" : "The enemy";
+        var resultS = (result == DESTROYED) ? "destroyed" : (result == HIT) ? "hit" : "miss";
+        var newMsg = [playerS + " shot at " + yString + " " + xString + " and " + resultS + " a ship", turn];
+        this.chat.push(newMsg);
     }
 }

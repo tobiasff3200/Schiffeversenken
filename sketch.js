@@ -1,5 +1,4 @@
 var gameManager;
-var gameLog;
 var dataManager;
 var chat;
 
@@ -11,20 +10,12 @@ function setup() {
     gameManager.setup(dataManager);
     chat.setup();
     dataManager.setup(gameManager, chat);
-    
-    
-            
-        
-    this.gameLog = new GameLog(260, 240, 300, 140);
-    this.gameLog.setup();
 }
 
 function draw() {
     background(0);
     gameManager.show();
     chat.show();
-    
-    gameLog.show();
 }
 
 

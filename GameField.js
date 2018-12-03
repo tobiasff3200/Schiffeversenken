@@ -1,10 +1,9 @@
 //import * as con from "./Constants.js";
+//zur darstellung der Nummern und Buchstaben neben den Feldern
+const fieldNumbers  = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+const fieldChars    = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
 function GameField(x, y, wid, heig){
-    
-    //zur darstellung der Nummern und Buchstaben neben den Feldern
-    const fieldNumbers  = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-    const fieldChars    = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
     
     //Mittelpunkte der Felder des GameFields    
 	this.centerPoints = []; //2D Array
