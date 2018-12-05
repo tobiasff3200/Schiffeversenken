@@ -42,10 +42,12 @@ function DataManager(){
 				console.log(e);
 				return;
 			}
-        }
+        }else{
+			json = input;
+		}
         print("Empfangen:");
         console.log(json);
-        
+
         //Nachricht an den GameManager
         if(json.receiver == "GM"){
             //if typ == "Reply" -> execute gameManager.receiveReply(data);
@@ -62,6 +64,14 @@ function DataManager(){
             if(json.type === "Ask" && index == -1){
                 this.gameManager.receiveQuestion(json.data, json.number);
             }
+			// if type == "gameCreated"
+			if(json.type === "gameCreated"){
+				this.gameManager.gameCreated(json.data);
+			}
+
+			if(json.type === "gameJoined"){
+				this.gameManager.gameJoined(json.date);
+			}
         }else
         //Nachricht an den Chat
         if(json.receiver == "CH"){
