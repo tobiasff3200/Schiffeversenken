@@ -82,6 +82,7 @@ wsServer.on('request', function(request) {
 				}
 				if(joined){
 					console.log("joined succesfully");
+					gameToken = token;
 					let data = {receiver: "GM", type: "gameJoined", data: token};
 					clients[index].sendUTF(
 							JSON.stringify({"utf8Data": data}));
@@ -102,8 +103,8 @@ wsServer.on('request', function(request) {
 
 		//Sonstige Nachrichten an Mitspieler weiterleiten
 		message = JSON.stringify(message);
-		console.log("Send message to index: "+gameSelect(index)+": "+message);
-		clients[gameSelect(index)].sendUTF(message);
+		console.log("Send message to index: "+gameSelect(index, gameToken)+": "+message);
+		clients[gameSelect(index, gameToken)].sendUTF(message);
 
 	// end of onMessage
 	});
@@ -121,11 +122,13 @@ wsServer.on('request', function(request) {
 //
 //
 //
-function gameSelect(index){
-	if(index%2 == 0){
-		return index+1;
+function gameSelect(index, gameToken){
+	gameIndex = games.indexOf(gameToken);
+	if(gameClients[gameIndex][0] == index){
+		return gameClients[gameIndex][1];
+	}else if(gameClients[gameIndex][1] == index){
+		return gameClients[gameIndex][0];
 	}
-	return index-1;
 }
 
 function randomTokenNotInArray(){
