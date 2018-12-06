@@ -1,4 +1,6 @@
-<!DOCTYPE html><html><head>
+<!DOCTYPE html>
+<html>
+<head>
     <script src="p5.min.js"></script>
     <script src="p5.dom.min.js"></script>
     <script src="p5.sound.min.js"></script>
@@ -7,16 +9,36 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <meta charset="utf-8">
 
-  </head>
-  <body>
-      <script src="sketch.js"></script>
-      <script src="GameField.js"></script>
-      <script src="Ship.js"></script>
-      <script src="websocket.js"></script>
-      <script src="DataManager.js"></script>
-      <script src="GameManager.js"></script>
-      <script src="Chat.js"></script>
-      <script src="GameLog.js"></script>
-      <script src="UserInterface.js"></script>
-      <script src="Button.js"></script>
-</body></html>
+</head>
+<body>
+	<script src="sketch.js"></script>
+	<script src="GameField.js"></script>
+	<script src="Ship.js"></script>
+	<script src="websocket.js"></script>
+	<script src="DataManager.js"></script>
+	<script src="GameManager.js"></script>
+	<script src="Chat.js"></script>
+	<script src="GameLog.js"></script>
+	<script src="UserInterface.js"></script>
+	<script src="Button.js"></script>
+
+	<div class="overlay" id="overlay">
+		<div class="overlay_content">
+			<h1>Schiffeversenken</h1>
+			<p>Describtion</p>
+			<div class="buttons">
+				<button class="button" id="createGame" onclick="dataManager.createGame()">Create Game</button>
+				<button class="button" id="joinGame" onclick="changeOverlay()">Join Game</button>
+				<input class="hidden button" type="text" id="gameToken" autofocus placeholder="Game Token" spellcheck="false">
+				<button class="hidden button" id="joinGame2" onclick="dataManager.joinGame($('#gameToken').val())">Join Game</button>
+			</div>
+		</div>
+	</div>
+	<script>
+		function changeOverlay(){
+			$("#gameToken, #joinGame2").removeClass("hidden");
+			$("#createGame, #joinGame").addClass("hidden");
+		}
+	</script>
+</body>
+</html>

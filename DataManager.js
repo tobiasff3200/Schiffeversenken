@@ -94,6 +94,7 @@ function DataManager(){
 	}
 	this.gameCreated = function(token){
 		this.gameToken = token;
+		$('#overlay').hide(1000)
 	}
 	this.joinGame = function(token){
 			this.send("GM", "joinGame", token, "");
@@ -103,6 +104,7 @@ function DataManager(){
 			alert("joining failed");
 		}else{
 			this.gameToken = token;
+			$('#overlay').hide(1000);
 			console.log("Joined succesfully");
 		}
 	}
