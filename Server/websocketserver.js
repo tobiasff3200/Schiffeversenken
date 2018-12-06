@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 var WebSocketServer = require('websocket').server;
 var http = require('http');
+// Speichert die Verbindungen
 var clients = [];
-// games = [gameid][user1,user2]
+// Speichert die gameTokens
 var games = [];
+// Speichert die Verbindungen der Spiele
 var gameClients = [];
 
 var server = http.createServer(function(request, response) {
@@ -17,9 +19,8 @@ server.listen(1337, function() {
 wsServer = new WebSocketServer({
 	httpServer: server
 });
-//
-//
-//
+
+
 // WebSocket server
 wsServer.on('request', function(request) {
 	var gameToken = null;
@@ -28,15 +29,9 @@ wsServer.on('request', function(request) {
 	var connection = request.accept(null, request.origin);
 	// we need to know client index to remove them on 'close' event
 	var index = clients.push(connection) - 1;
-	// sending the index to the client
-	//var json = JSON.stringify({ type:'index', data: index });
-	//clients[index].sendUTF(json);
-	console.log(index);
+	console.log("Connected with id: "+index);
 
-
-
-	// This is the most important callback for us, we'll handle
-	// all messages from users here.
+	// message handler
 	connection.on('message', function(message) {
 		//trying to decode the JSON
 		try {
@@ -112,7 +107,28 @@ wsServer.on('request', function(request) {
 	// user disconnected
 	connection.on('close', function(connection) {
 		console.log((new Date()) + " Peer "+ connection.remoteAddress + " disconnected.");
-
+		if(gameToken != null){
+			gameIndex = games.indexOf(gameToken);
+			if(gameClients[gameIndex][0] == index){
+				gameClients[gameIndex][0] = null;
+			}else{
+				gameClients[gameIndex][1] = null;
+			}
+			if(gameClients[gameIndex][0] == null && gameClients[gameIndex][1] == null){
+				gameClients.splice(gameIndex);
+				games.splice(gameIndex);
+			}else{
+				if(gameClients[gameIndex][0] == null){
+					let data = {receiver: "GM", type: "enemyDisconnected", data: gameToken};
+					clients[gameClients[gameIndex][1]].sendUTF(
+							JSON.stringify({"utf8Data": data}));
+				}else{
+					let data = {receiver: "GM", type: "enemyDisconnected", data: gameToken};
+					clients[gameClients[gameIndex][0]].sendUTF(
+							JSON.stringify({"utf8Data": data}));
+				}
+			}
+		}
 		// remove user from the list of connected clients
 		clients.splice(index, 1);
 	});

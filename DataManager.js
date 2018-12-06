@@ -74,6 +74,9 @@ function DataManager(){
 			if(json.type === "gameJoined"){
 				this.gameJoined(json.data);
 			}
+			if(json.type === "enemyDisconnected"){
+				this.enemyDisconnected();
+			}
         }else
         //Nachricht an den Chat
         if(json.receiver == "CH"){
@@ -113,6 +116,9 @@ function DataManager(){
 		}else{
 			console.log("No game found in URL");
 		}
+	}
+	this.enemyDisconnected = function(){
+		alert("Enemy disconnected");
 	}
 	//--------------End of GameSelect-----------------------------------------//
 }
