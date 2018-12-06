@@ -17,19 +17,19 @@ h1{
 	position: absolute;
 	left: 0px;
 	top: 0px;
-	background-color: rgba(10, 10, 10, 0.5);
+	background-color: rgba(10, 10, 10, 0.85);
 }
 .overlay_content{
 	margin: auto;
 	width: 75%;
 	height: 60vh;
 	margin: auto;
-	margin-top: 11vh;
+	margin-top: 15vh;
 	background-color: black;
 	text-align: center;
 	float: center;
 	width: 75%;
-	border: solid yellow 2px;
+	border: solid white 2px;
 }
 .button{
 	background-color: black;
