@@ -1,3 +1,6 @@
+const YOU = 0;
+const ENEMY = 1;
+
 function Chat(x, y, wid, heig){
     //speichert den Gesamten chat
     this.chat = [];
@@ -12,9 +15,10 @@ function Chat(x, y, wid, heig){
     //"Momentane Positions Strich" im textField
     this.blink;
     //wird benötigt um regelmäßig zu blinken
-    this.count;
-    
+    this.count;  
+    //zum senden der Nachrichten
     this.dataManager;
+    
     
     this.setup = function(dataManager){
         this.msg = "";
@@ -29,6 +33,7 @@ function Chat(x, y, wid, heig){
     
     //zum darstellen des Textes und des Chats
     this.show = function(){
+        push();
         //übersetzt den Ursprung auf die Mitte des Feldes
         translate(x+wid/2, y+heig/2);
         //setzt die Textanlehnung auf Links und Unten
@@ -58,19 +63,22 @@ function Chat(x, y, wid, heig){
         
         //print msg
         fill(0);
-        text(this.msg, -wid*0.45, heig*0.4 + this.heightT/3);
+        text(this.msg, 0, heig*0.28 + this.heightT, wid-20, this.heightT);
         
         //print chat
         //für jeden inhalt im Chat eine neue Zeile
         for(var i = 0; i < this.chat.length; i++){
             //darf icht größer sein als das TextField
-            if(heig*0.35-(this.heightT)*(this.chat.length-i) > -heig/2){
-                //bekommt noch eine Nummer zugewiesen
-                text((i+1)+": "+this.chat[i], -wid*0.45, heig*0.35-(this.heightT)*(this.chat.length-i));
+            if(heig*0.35-(this.heightT)*(this.chat.length-i) > -heig/2.5){
+                //jenachdem wer geschrieben hat ändert sich die Seite 
+                //des Textes
+                textAlign(((this.chat[i][1]) == YOU) ? RIGHT : LEFT);
+                text(this.chat[i][0], 0, heig*0.30-(this.heightT)*(this.chat.length-i), wid-20, this.heightT);
             }
         }
         //übersetzte den ursprung zurück auf 0,0
         translate(0, 0);
+        pop();
     }
     
 //---------------------------inputs--------------------------------//
@@ -95,7 +103,7 @@ function Chat(x, y, wid, heig){
                keyCode != BACKSPACE && 
                ((key+"").length) <= 1 &&
                this.checkValidKey(key+"") && 
-               textWidth(this.msg) < wid-wid/15-textWidth("W")){
+               textWidth(this.msg) < wid-20-textWidth("W")){
                 //hänge den gedrückten buchstaben an die Nachicht an
                 this.msg += key;
             }
@@ -141,9 +149,9 @@ function Chat(x, y, wid, heig){
     };
     
 //---------------------------inputs--------------------------------//
-    //prüft ob ein gultiger Buchstabe oder ein Zeichen gefrückt wurde
+    //prüft ob ein gültiger Buchstabe oder ein Zeichen gefrückt wurde
     this.checkValidKey = function(key){
-        return new RegExp("^[a-zA-Z0-9 .öäü!?/()_-]+$").test(key);
+        return new RegExp("^[a-zA-Zß0-9 .öäü!?/()_-]+$").test(key);
     }
     
     //schreibt die geschriebene Massage in den chat
@@ -154,7 +162,7 @@ function Chat(x, y, wid, heig){
         //wenn die msg größer als 0 ist 
         if(this.msg.length > 0){
             //hänge die Nachricht and den Chat dran
-            this.chat.push(this.msg);
+            this.chat.push([this.msg, YOU]);
             //setzte die nachricht wieder auf 0, bzw einen leeren String
             this.msg = "";
         }
@@ -163,7 +171,7 @@ function Chat(x, y, wid, heig){
     //schreibt die ÜBERGEBENE Nachricht in den chat, ohne dass man
     //eine nachricht schreiben muss
     this.postMsg = function(msg_){
-        this.chat.push(msg_);
+        this.chat.push([msg_, ENEMY]);
     }
     
     //gibt den Text an der Position index zurück
