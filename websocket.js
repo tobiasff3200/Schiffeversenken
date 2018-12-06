@@ -2,7 +2,6 @@ function Websocket(DataM){
 
     this.setup = function(){
         this.checkBrowser();
-        this.initializeConnection();
     }
 
 	this.checkBrowser = function(){
@@ -25,6 +24,7 @@ function Websocket(DataM){
 	// onopen() is executed once the connection is established
 	this.connection.onopen = function () {
 		console.log('Connected to the Server');
+		DataM.checkUrl();
 	};
 
 	// This event is trigert everytime a message is send from the server
