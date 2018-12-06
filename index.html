@@ -26,19 +26,15 @@
 		<div class="overlay_content">
 			<h1>Schiffeversenken</h1>
 			<p>Describtion</p>
-			<div class="buttons">
+			<div class="buttons" id="buttons">
 				<button class="button" id="createGame" onclick="dataManager.createGame()">Create Game</button>
 				<button class="button" id="joinGame" onclick="changeOverlay()">Join Game</button>
 				<input class="hidden button" type="text" id="gameToken" autofocus placeholder="Game Token" spellcheck="false">
 				<button class="hidden button" id="joinGame2" onclick="dataManager.joinGame($('#gameToken').val())">Join Game</button>
+				<span class="hidden" id="gameInfo"></span><br>
+				<button class="hidden button" id="close" onclick="closeOverlay()">Close</button>
 			</div>
 		</div>
 	</div>
-	<script>
-		function changeOverlay(){
-			$("#gameToken, #joinGame2").removeClass("hidden");
-			$("#createGame, #joinGame").addClass("hidden");
-		}
-	</script>
 </body>
 </html>
