@@ -2,6 +2,8 @@ function DataManager(){
 
     this.websocket = new Websocket(this);
     this.sendedData = [];
+	//speichert in welchem Spiel sich der Nutzer befindet
+	this.gameToken = null;
 
 
     this.setup = function(gameManager, chat){
@@ -66,11 +68,11 @@ function DataManager(){
             }
 			// if type == "gameCreated"
 			if(json.type === "gameCreated"){
-				this.gameManager.gameCreated(json.data);
+				this.gameCreated(json.data);
 			}
 
 			if(json.type === "gameJoined"){
-				this.gameManager.gameJoined(json.date);
+				this.gameJoined(json.data);
 			}
         }else
         //Nachricht an den Chat
@@ -82,4 +84,35 @@ function DataManager(){
             }
         }
 	}
+
+	//--------------GameSelect------------------------------------------------//
+	this.createGame = function(){
+			this.send("GM", "createGame", "", "");
+	}
+	this.gameCreated = function(token){
+		this.gameToken = token;
+	}
+	this.joinGame = function(token){
+			this.send("GM", "joinGame", token, "");
+	}
+	this.gameJoined = function(token){
+		if(token == -1){
+			alert("joining failed");
+		}else{
+			this.gameToken = token;
+			console.log("Joined succesfully");
+		}
+	}
+	this.checkUrl = function(){
+		var url_string = window.location.href;
+		var url = new URL(url_string);
+		var c = url.searchParams.get("game");
+		if(c != null){
+			console.log(c);
+			this.joinGame(c);
+		}else{
+			console.log("No game found in URL");
+		}
+	}
+	//--------------End of GameSelect-----------------------------------------//
 }

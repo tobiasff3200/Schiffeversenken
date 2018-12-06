@@ -41,8 +41,6 @@ function GameManager(){
     this.gameScore = 0;
     //zeigt an ob momentan auf eine antwort vom server gewartet wird (blockiert alle inputs)
     this.waitingForServer = false;
-	//speichert in welchem Spiel sich der Nutzer befindet
-	this.gameToken = null;
 
     //initialiesiert alles wichtige für das Spiel
     //GameFields und Schiffe und ruft deren setup's auf
@@ -421,31 +419,4 @@ function GameManager(){
         arrayToShort[x] = newRow;
         return arrayToShort;
     }
-
-
-	//--------------GameSelect------------------------------------------------//
-	this.createGame = function(){
-		//if(gameToken === null){
-			// create new Token
-			this.dataManager.send("GM", "createGame", "", "");
-
-		//}
-	}
-	this.gameCreated = function(token){
-		this.gameToken = token;
-	}
-	this.joinGame = function(token){
-		//if(gameToken === null){
-			this.dataManager.send("GM", "joinGame", token, "");
-		//}
-	}
-	this.gameJoined = function(token){
-		if(token == -1){
-			alert("joining failed");
-		}else{
-			this.gameToken = token;
-			console.log("Joined succesfully");
-		}
-	}
-	//--------------End of GameSelect-----------------------------------------//
 }
