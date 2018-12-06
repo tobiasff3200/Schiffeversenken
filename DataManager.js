@@ -2,6 +2,8 @@ function DataManager(){
 
     this.websocket = new Websocket(this);
     this.sendedData = [];
+	//speichert in welchem Spiel sich der Nutzer befindet
+	this.gameToken = null;
 
 
     this.setup = function(gameManager, chat){
@@ -42,10 +44,12 @@ function DataManager(){
 				console.log(e);
 				return;
 			}
-        }
+        }else{
+			json = input;
+		}
         print("Empfangen:");
         console.log(json);
-        
+
         //Nachricht an den GameManager
         if(json.receiver == "GM"){
             //if typ == "Reply" -> execute gameManager.receiveReply(data);
@@ -62,6 +66,17 @@ function DataManager(){
             if(json.type === "Ask" && index == -1){
                 this.gameManager.receiveQuestion(json.data, json.number);
             }
+			// if type == "gameCreated"
+			if(json.type === "gameCreated"){
+				this.gameCreated(json.data);
+			}
+
+			if(json.type === "gameJoined"){
+				this.gameJoined(json.data);
+			}
+			if(json.type === "enemyDisconnected"){
+				this.enemyDisconnected();
+			}
         }else
         //Nachricht an den Chat
         if(json.receiver == "CH"){
@@ -72,4 +87,38 @@ function DataManager(){
             }
         }
 	}
+
+	//--------------GameSelect------------------------------------------------//
+	this.createGame = function(){
+			this.send("GM", "createGame", "", "");
+	}
+	this.gameCreated = function(token){
+		this.gameToken = token;
+	}
+	this.joinGame = function(token){
+			this.send("GM", "joinGame", token, "");
+	}
+	this.gameJoined = function(token){
+		if(token == -1){
+			alert("joining failed");
+		}else{
+			this.gameToken = token;
+			console.log("Joined succesfully");
+		}
+	}
+	this.checkUrl = function(){
+		var url_string = window.location.href;
+		var url = new URL(url_string);
+		var c = url.searchParams.get("game");
+		if(c != null){
+			console.log(c);
+			this.joinGame(c);
+		}else{
+			console.log("No game found in URL");
+		}
+	}
+	this.enemyDisconnected = function(){
+		alert("Enemy disconnected");
+	}
+	//--------------End of GameSelect-----------------------------------------//
 }

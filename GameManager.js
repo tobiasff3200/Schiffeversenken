@@ -34,7 +34,7 @@ function GameManager(){
     //speichert den aktuellen zug - n%2 == 0 => man darf schießen
     //das wird durch denjenigen der später bereit drückt zufällig entschieden wer als erstes dran ist und
     //an den gegner geschickt, der seine "Start Runde", dahingehend verändert. Das heißt wenn man
-    //als erster dran ist bleibt gameTurn bei 0 aber wenn der gegner zuerst dran ist wird 
+    //als erster dran ist bleibt gameTurn bei 0 aber wenn der gegner zuerst dran ist wird
     //gameTurn auf 1 gesetzt sodass sie immer unterschiedlich von einander sein (abstand 1)
     //das führt dazu dass in der einen Runde %2 bei dem einen funktioniert und in der nächsten Runde bei dem andere
     this.gameTurn = 0;
@@ -88,7 +88,7 @@ function GameManager(){
 //-----------------------------------------inputs------------------------------------------//
 //                                          \\//
     this.callInput = function(inputTyp, data){
-        if(!this.waitingForServer && this.gameTurn%2 == 0){ 
+        if(!this.waitingForServer && this.gameTurn%2 == 0){
             if(inputTyp == "MousePressed"){
                 if(data.x != null && data.y != null){
                     this.mousePressedGame(data.x, data.y);
@@ -357,7 +357,7 @@ function GameManager(){
                 //eine zufallszahl wird generiert, welche entscheidet wer anfängt
                 var first = (Math.random()>0.5) ? "You" : "Enemy";
                 //sollte der Spieler anfangen bleibt gameTurn 0, wenn nicht wird es auf 1 gesetzt
-                //da man nur "schießen" kann wenn gameTurn%2==0 ist 
+                //da man nur "schießen" kann wenn gameTurn%2==0 ist
                 this.gameTurn = (first == "You") ? 0 : 1;
                 //für den Gegner gilt genau das gleiche nur umgedreht und es wird ihm gesendet
                 var enemeyTurn = (first == "Enemy") ? 0 : 1;
