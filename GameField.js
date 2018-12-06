@@ -121,6 +121,7 @@ function GameField(x, y, wid, heig){
         return null;
 	}
     
+    //prüft ob das Feld exestiert
     this.checkInField = function(x, y){
         return (0 <= x && x < this.centerPoints.length && 0 <= y && y < this.centerPoints[x].length);
     }

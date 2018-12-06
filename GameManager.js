@@ -50,10 +50,10 @@ function GameManager(){
         this.dataManager = dataManager;
         this.gameFields[0] = new GameField(20, 20, 10, 10);
         this.gameFields[1] = new GameField(20, 240, 10, 10);
-        this.gameLog = new GameLog(260, 240, 300, 140);
+        this.gameLog = new GameLog(260, 300, 300, 140);
         this.gameFields[0].setup();
         this.gameFields[1].setup();
-        this.gameLog.setup();
+        this.gameLog.setup(this);
         for(var i = 0; i < SHIPLENGTH.length; i++){
             this.ships[i] = new Ship(30+(SIZE)*i, 500, SHIPLENGTH[i]);
             this.ships[i].setup();
@@ -66,7 +66,10 @@ function GameManager(){
         //zeichnet die GameFields
         this.gameFields[0].showField();
         this.gameFields[1].showField();
-        this.gameLog.show();
+        if(this.gameStarted){
+           this.gameLog.show(); 
+        }
+        
         //zeichnet SChiffe
         for(var ship of this.ships){
             //prüft ob das Schiff grade bewegt wird, wenn ja wird es auf
@@ -382,8 +385,10 @@ function GameManager(){
         this.placeShipsRandomRec(this.ships.reverse(), this.gameFields[1].centerPoints, 0, 5);
         this.ships.reverse();
         //setzt die gespeicherten Felder wieder auf null damit man die Schiffe noch bewegen kann 
-        for(var ship of this.ships){
-            ship.coverdFields = null;
+        if(!this.shipPosSafed){
+            for(var ship of this.ships){
+                ship.coverdFields = null;
+            }
         }
     }
 

@@ -1,21 +1,30 @@
+var cnv
+
 var gameManager;
 var dataManager;
 var chat;
+var userInterface;
 
 function setup() {
-    createCanvas(600, 600);
+    cnv = createCanvas(700, 700);
+    //cnv.position((windowWidth - width)/2, (windowHeight - height)/2);
     gameManager = new GameManager();
     dataManager = new DataManager();
     chat = new Chat(285, 20, 250, 200);
+    userInterface = new UserInterface(260, 300);
+    dataManager.setup(gameManager, chat);
     gameManager.setup(dataManager);
     chat.setup();
-    dataManager.setup(gameManager, chat);
+    userInterface.setup(gameManager);
 }
 
 function draw() {
     background(0);
     gameManager.show();
     chat.show();
+    if(!gameManager.gameStarted){
+        userInterface.show();   
+    }
 }
 
 
@@ -33,8 +42,14 @@ function keyPressed(){
 function mousePressed(){
     gameManager.callInput("MousePressed", createVector(mouseX, mouseY));
     chat.callInput("MousePressed", createVector(mouseX, mouseY));
+    userInterface.mousePressed();
 } 
 
 function mouseReleased(){
     gameManager.callInput("MouseReleased", createVector(mouseX, mouseY));
+    userInterface.mouserReleased();
+}
+
+function windowResized(){
+    //cnv.position((windowWidth - width)/2, (windowHeight - height)/2);
 }

@@ -149,7 +149,7 @@ function Chat(x, y, wid, heig){
     };
     
 //---------------------------inputs--------------------------------//
-    //prüft ob ein gultiger Buchstabe oder ein Zeichen gefrückt wurde
+    //prüft ob ein gültiger Buchstabe oder ein Zeichen gefrückt wurde
     this.checkValidKey = function(key){
         return new RegExp("^[a-zA-Zß0-9 .öäü!?/()_-]+$").test(key);
     }
