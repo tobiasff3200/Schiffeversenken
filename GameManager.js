@@ -15,7 +15,7 @@ const EMPTY = 0;
 const SIZE = 20;
 
 function GameManager(){
-    
+
     //ist für die verarbeitung und das senden der Daten verantwortlich
     this.dataManager = null;
     //ist für die darstellung des GameLog verandwortlich
@@ -31,7 +31,7 @@ function GameManager(){
     //simbolisiert ob die Spieler bereit sind oder nicht
     this.youReady = false;
     this.enemyReady = false;
-    //speichert den aktuellen zug - n%2 == 0 => man darf schießen
+    //speichert den aktuellen Zug - n%2 == 0 => man darf schießen
     //das wird durch denjenigen der später bereit drückt zufällig entschieden wer als erstes dran ist und
     //an den gegner geschickt, der seine "Start Runde", dahingehend verändert. Das heißt wenn man
     //als erster dran ist bleibt gameTurn bei 0 aber wenn der gegner zuerst dran ist wird
