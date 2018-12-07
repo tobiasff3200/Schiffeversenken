@@ -50,10 +50,13 @@ function GameManager(){
         this.dataManager = dataManager;
         this.gameFields[0] = new GameField(20, 20, 10, 10);
         this.gameFields[1] = new GameField(20, 240, 10, 10);
-        this.gameLog = new GameLog(260, 300, 300, 140);
+        //koordinaten und größe und ob angeziegt werden soll wer dran ist
+        this.gameLog = new GameLog(260, 310, 300, 150, true);
+        this.gameAlert = new GameLog(250, 250, 320, 40, false);
         this.gameFields[0].setup();
         this.gameFields[1].setup();
         this.gameLog.setup(this);
+        this.gameAlert.setup(this);
         for(var i = 0; i < SHIPLENGTH.length; i++){
             this.ships[i] = new Ship(30+(SIZE)*i, 500, SHIPLENGTH[i]);
             this.ships[i].setup();
@@ -69,6 +72,7 @@ function GameManager(){
         if(this.gameStarted){
            this.gameLog.show(); 
         }
+        this.gameAlert.show();
         
         //zeichnet SChiffe
         for(var ship of this.ships){
@@ -183,6 +187,8 @@ function GameManager(){
     this.safeShipPosition = function(){
         //wenn die schiffe schon gespeichert wurden kann man abbrechen
         if(this.shipPosSafed){
+            this.deletSafedShipPosition();
+            this.gameAlert.alert("Position of the ships where deleted", color("Green"))
             return
         }
         this.shipPosSafed = true;
@@ -199,12 +205,21 @@ function GameManager(){
             for(var ship of this.ships){
                 ship.coverdFields = null;
             }
-            alert("Die Schiffe sind nicht richtig platziert worden, \n" +
-                  "Bitte beachten Sie die Regeln");
+            this.gameAlert.alert("Ships wasn't place correctly!", color("Red"));
+            //alert("Die Schiffe sind nicht richtig platziert worden, \n" +
+              //    "Bitte beachten Sie die Regeln");
         }else{
-            alert("Position der Schiffe wurde gespeichert")
+            this.gameAlert.alert("Position of the ships were safed", color("Green"));
+            //alert("Position der Schiffe wurde gespeichert")
         }
         return this.shipPosSafed;
+    }
+    
+    this.deletSafedShipPosition = function(){
+        for(var ship of this.ships){
+            ship.coverdFields = null;
+        }
+        this.shipPosSafed = false;
     }
 
     //prüft ob alle Bedingungen erfüllt wurden um das Spiel zu starten
@@ -279,7 +294,8 @@ function GameManager(){
                 this.dataManager.send("GM", "Reply", [NEXTTURN]);
                 //postet die Nachricht dass nichts getroffen wrude
                 this.gameLog.postMsg(x, y, MISS, this.gameTurn);
-                alert("You miss. Nextturn!");
+                this.gameAlert.alert("You miss. Nextturn!", color("Blue"));
+                //alert("You miss. Nextturn!");
                 //erhöht die momentane Runde um 1 (gameTurn)
                 this.gameTurn++;
             }else if(data[2] >= HIT){
@@ -295,17 +311,20 @@ function GameManager(){
                     if(this.checkWin()){
                         this.dataManager.send("GM", "Reply", ["Finish"]);
                         this.gameEnd = true;
-                        alert("Last ship destroyed, You've won the Game!");
+                        //alert("Last ship destroyed, You've won the Game!");
+                        this.gameAlert.alert("Last ship destroyed, You've won the Game!", color("Gold"));
                     }else{
                         //postet die Nachricht dass ein Schiff zerstört wurde im gameLog
                         this.gameLog.postMsg(x, y, DESTROYED, this.gameTurn);
                         //die anzahl aller Schiffe minus die schon zerstörten Schiffe = die restlichen Schiffe
-                        alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left");
+                        this.gameAlert.alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left", "Green");
+                        //alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left");
                     }
                 }else{
                     //postet die Nachricht dass ein Schiff getroffen wurde im gameLog
                     this.gameLog.postMsg(x, y, HIT, this.gameTurn);
                     alert("You hit a Ship! Shoot another one!");
+                    this.gameAlert.alert("You hit a Ship! Shoot another one!", color("Green"));
                 }
             }
             //es wird nicht mehr auf den Server gewartet
@@ -330,7 +349,8 @@ function GameManager(){
                 }else{
                     //wenn nicht wird der Gegner auf Ready gesetzt und
                     //dem Spieler wird mitgeteilt dass der Gegner ready ist
-                    alert("The enemy is Ready!");
+                    //alert("The enemy is Ready!");
+                    this.gameAlert.alert("The enemy is Ready!", color("Green"))
                     this.enemyReady = true;
                 }
             }else
@@ -340,11 +360,13 @@ function GameManager(){
                 this.gameStarted = true;
                 this.gameTurn = data[1];
                 var turnMsg = (this.gameTurn%2==0) ? "You go first!" : "Enemy goes first!";
-                alert("The Game has started! " + turnMsg);   
+                //alert("The Game has started! " + turnMsg);   
+                this.gameAlert.alert("The Game has started! " + turnMsg, color("Green"))
             }else
                 if(data[0] == "Finish"){
                 //der Gegner hat gewonnen, wenn er "Finish" schickt
-                alert("You lose! Good luck next round");
+                //alert("You lose! Good luck next round");
+                this.gameAlert.alert("You lose! Good luck next round", color("Red"))
             }
         }
     }
@@ -364,12 +386,14 @@ function GameManager(){
                 this.dataManager.send("GM", "Reply", ["Start", enemeyTurn]);
                 this.gameStarted = true;
                 var turnMsg = (this.gameTurn%2==0) ? "You go first!" : "Enemy goes first!";
-                alert("The game has started! " + turnMsg);
+                //alert("The game has started! " + turnMsg);
+                this.gameAlert.alert("The game has started! " + turnMsg, color("Green"))
             }else{
                 //wenn der Gegner noch nicht bereit wird ihm mitgeteilt, dass der
                 //Speiler bereit ist
                 this.dataManager.send("GM", "Reply", ["Ready"]);
-                alert("Waiting for enemy");
+                //alert("Waiting for enemy");
+                this.gameAlert.alert("Waiting for enemy", color("Green"));
             }
         }else{
             //sollte die Methode aufgerufen werden obwohl man nicht

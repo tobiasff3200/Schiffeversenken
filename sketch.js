@@ -11,7 +11,7 @@ function setup() {
     gameManager = new GameManager();
     dataManager = new DataManager();
     chat = new Chat(285, 20, 250, 200);
-    userInterface = new UserInterface(260, 300);
+    userInterface = new UserInterface(260, 310);
     dataManager.setup(gameManager, chat);
     gameManager.setup(dataManager);
     chat.setup();
