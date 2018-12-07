@@ -31,7 +31,6 @@ function DataManager(){
 		this.websocket.connection.send(
 			JSON.stringify({ number: randNum, receiver: receiver, type: type, data: data}));
 			console.log("Erfolgreich gesendet: " + JSON.stringify({ number: randNum, receiver: receiver, type: type, data: data}));
-			// this.websocket.connection.send(json);
 		}
 
 	this.receiveData = function(input){

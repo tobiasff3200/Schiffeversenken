@@ -317,13 +317,13 @@ function GameManager(){
                         //postet die Nachricht dass ein Schiff zerstört wurde im gameLog
                         this.gameLog.postMsg(x, y, DESTROYED, this.gameTurn);
                         //die anzahl aller Schiffe minus die schon zerstörten Schiffe = die restlichen Schiffe
-                        this.gameAlert.alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left", "Green");
-                        //alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left");
+                        this.gameAlert.alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left", color("Green"));
+                        alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left");
                     }
                 }else{
                     //postet die Nachricht dass ein Schiff getroffen wurde im gameLog
                     this.gameLog.postMsg(x, y, HIT, this.gameTurn);
-                    alert("You hit a Ship! Shoot another one!");
+                    //alert("You hit a Ship! Shoot another one!");
                     this.gameAlert.alert("You hit a Ship! Shoot another one!", color("Green"));
                 }
             }
@@ -340,7 +340,8 @@ function GameManager(){
                 this.gameTurn++;
                 //und die inputs freigegeben
                 this.waitingForServer = false;
-                alert("Its your turn!");
+                //alert("Its your turn!");
+                this.gameAlert.alert("Its your turn!", color("Green"))
             }else
             if(data[0] == "Ready"){
                 if(this.youReady){

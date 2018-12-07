@@ -118,14 +118,13 @@ wsServer.on('request', function(request) {
 				gameClients.splice(gameIndex);
 				games.splice(gameIndex);
 			}else{
+                let data = {receiver: "GM", type: "enemyDisconnected", data: gameToken};
 				if(gameClients[gameIndex][0] == null){
-					let data = {receiver: "GM", type: "enemyDisconnected", data: gameToken};
 					clients[gameClients[gameIndex][1]].sendUTF(
-							JSON.stringify({"utf8Data": data}));
-				}else{
-					let data = {receiver: "GM", type: "enemyDisconnected", data: gameToken};
+                        JSON.stringify({"utf8Data": data}));
+				}else{					
 					clients[gameClients[gameIndex][0]].sendUTF(
-							JSON.stringify({"utf8Data": data}));
+                        JSON.stringify({"utf8Data": data}));
 				}
 			}
 		}
