@@ -7,7 +7,7 @@ var userInterface;
 
 function setup() {
     cnv = createCanvas(700, 700);
-    //cnv.position((windowWidth - width)/2, (windowHeight - height)/2);
+    cnv.position((windowWidth - width)/2, (windowHeight - height)/2);
     gameManager = new GameManager();
     dataManager = new DataManager();
     chat = new Chat(285, 20, 250, 200);
@@ -51,5 +51,5 @@ function mouseReleased(){
 }
 
 function windowResized(){
-    //cnv.position((windowWidth - width)/2, (windowHeight - height)/2);
+    cnv.position((windowWidth - width)/2, (windowHeight - height)/2);
 }
