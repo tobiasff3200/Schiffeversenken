@@ -94,6 +94,9 @@ function DataManager(){
 	}
 	this.gameCreated = function(token){
 		this.gameToken = token;
+		$("#createGame, #joinGame").addClass("hidden");
+		$("#gameInfo").text("Game Token: "+token);
+		$("#close, #gameInfo").removeClass("hidden");
 	}
 	this.joinGame = function(token){
 			this.send("GM", "joinGame", token, "");
@@ -103,6 +106,7 @@ function DataManager(){
 			alert("joining failed");
 		}else{
 			this.gameToken = token;
+			$('#overlay').hide(1000);
 			console.log("Joined succesfully");
 		}
 	}
@@ -121,4 +125,11 @@ function DataManager(){
 		alert("Enemy disconnected");
 	}
 	//--------------End of GameSelect-----------------------------------------//
+}
+function changeOverlay(){
+	$("#gameToken, #joinGame2").removeClass("hidden");
+	$("#createGame, #joinGame").addClass("hidden");
+}
+function closeOverlay(){
+	$('#overlay').addClass('hidden');
 }
