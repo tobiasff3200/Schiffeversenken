@@ -23,27 +23,27 @@ function draw() {
     gameManager.show();
     chat.show();
     if(!gameManager.gameStarted){
-        userInterface.show();   
+        userInterface.show();
     }
 }
 
 
 //die Methode callInput gibt true zurück wenn sie mit "KeyPressed" aufgerufen wurde
-//dadruch wird sichergestellt, dass wenn man was in den chat schreibt man keine 
+//dadruch wird sichergestellt, dass wenn man was in den chat schreibt man keine
 //Tastenkombination vom GameManager aufrufen möchte
 //wird ggf. noch entfernt falls wir uns für buttons entscheiden
 function keyPressed(){
     if(!chat.callInput("KeyPressed", [key, keyCode])){
         gameManager.callInput("KeyPressed", key);
     }
-    
-}   
+
+}
 
 function mousePressed(){
     gameManager.callInput("MousePressed", createVector(mouseX, mouseY));
     chat.callInput("MousePressed", createVector(mouseX, mouseY));
     userInterface.mousePressed();
-} 
+}
 
 function mouseReleased(){
     gameManager.callInput("MouseReleased", createVector(mouseX, mouseY));
@@ -53,3 +53,13 @@ function mouseReleased(){
 function windowResized(){
     //cnv.position((windowWidth - width)/2, (windowHeight - height)/2);
 }
+
+window.addEventListener("beforeunload", function (e) {
+    var confirmationMessage = 'Do you really want to leave the game?';
+
+	if (gameManager.gameEnd) {
+            return undefined;
+        }
+    (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+    return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+});
