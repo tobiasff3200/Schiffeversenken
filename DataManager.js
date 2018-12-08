@@ -106,7 +106,7 @@ function DataManager(){
 			alert("joining failed");
 		}else{
 			this.gameToken = token;
-			$('#overlay').hide(1000);
+			closeOverlay();
 			console.log("Joined succesfully");
 		}
 	}
@@ -131,5 +131,8 @@ function changeOverlay(){
 	$("#createGame, #joinGame").addClass("hidden");
 }
 function closeOverlay(){
-	$('#overlay').addClass('hidden');
+	gameManager.waitingForServer = false;
+	console.log("Overlay closed");
+	$('#overlay').hide(1000);
+	//$('#overlay').addClass('hidden');
 }
