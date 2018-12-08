@@ -49,7 +49,7 @@ wsServer.on('request', function(request) {
 			gameClients[gameIndex] = [index, null];
 			console.log(games);
 			let data = {receiver: "GM", type: "gameCreated", data: gameToken};
-			clients[index].sendUTF(
+			connection.sendUTF(
 					JSON.stringify({"utf8Data": data}));
 			console.log(JSON.stringify({"utf8Data": data}));
 			return;
@@ -70,7 +70,7 @@ wsServer.on('request', function(request) {
 				}else{
 					console.log("Joining failed");
 					let data = {receiver: "GM", type: "gameJoined", data: -1};
-					clients[index].sendUTF(
+					connection.sendUTF(
 							JSON.stringify({"utf8Data": data}));
 							console.log(games);
 							console.log(gameClients);
@@ -79,7 +79,7 @@ wsServer.on('request', function(request) {
 					console.log("joined succesfully");
 					gameToken = token;
 					let data = {receiver: "GM", type: "gameJoined", data: token};
-					clients[index].sendUTF(
+					connection.sendUTF(
 							JSON.stringify({"utf8Data": data}));
 							console.log(games);
 							console.log(gameClients);
@@ -89,7 +89,7 @@ wsServer.on('request', function(request) {
 			}else{
 				console.log("Joining failed");
 				let data = {receiver: "GM", type: "gameJoined", data: -1};
-				clients[index].sendUTF(
+				connection.sendUTF(
 						JSON.stringify({"utf8Data": data}));
 						console.log(games);
 			}
