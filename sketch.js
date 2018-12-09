@@ -6,8 +6,8 @@ var chat;
 var userInterface;
 
 function setup() {
-    cnv = createCanvas(700, 700);
-    cnv.position((windowWidth - width)/2, (windowHeight - height)/2);
+    cnv = createCanvas(700, 700);       //eigentliche größe 600, 550
+    cnv.position((windowWidth - 600)/2, (windowHeight - 550)/2);
     gameManager = new GameManager();
     dataManager = new DataManager();
     chat = new Chat(285, 20, 250, 200);

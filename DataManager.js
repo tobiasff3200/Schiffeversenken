@@ -91,15 +91,18 @@ function DataManager(){
 	this.createGame = function(){
 			this.send("GM", "createGame", "", "");
 	}
+    
 	this.gameCreated = function(token){
 		this.gameToken = token;
 		$("#createGame, #joinGame").addClass("hidden");
 		$("#gameInfo").text("Game Token: "+token);
 		$("#close, #gameInfo").removeClass("hidden");
 	}
+    
 	this.joinGame = function(token){
 			this.send("GM", "joinGame", token, "");
 	}
+    
 	this.gameJoined = function(token){
 		if(token == -1){
 			alert("joining failed");
@@ -120,15 +123,18 @@ function DataManager(){
 			console.log("No game found in URL");
 		}
 	}
+    
 	this.enemyDisconnected = function(){
 		alert("Enemy disconnected");
 	}
 	//--------------End of GameSelect-----------------------------------------//
 }
+
 function changeOverlay(){
 	$("#gameToken, #joinGame2").removeClass("hidden");
 	$("#createGame, #joinGame").addClass("hidden");
 }
 function closeOverlay(){
 	$('#overlay').addClass('hidden');
+    gameManager.waitingForServer = false;
 }
