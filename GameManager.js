@@ -15,7 +15,7 @@ const EMPTY = 0;
 const SIZE = 20;
 
 function GameManager(){
-    
+
     //ist für die verarbeitung und das senden der Daten verantwortlich
     this.dataManager = null;
     //ist für die darstellung des GameLog verandwortlich
@@ -42,7 +42,7 @@ function GameManager(){
     //bis er die größe des Arrays der vorhandenen Schiffe hat -dann hat der spieler gewonnen
     this.gameScore = 0;
     //zeigt an ob momentan auf eine antwort vom server gewartet wird (blockiert alle inputs)
-    this.waitingForServer = false;
+    this.waitingForServer = true;
 
     //initialiesiert alles wichtige für das Spiel
     //GameFields und Schiffe und ruft deren setup's auf
@@ -67,9 +67,9 @@ function GameManager(){
         this.gameFields[0].showField();
         this.gameFields[1].showField();
         if(this.gameStarted){
-           this.gameLog.show(); 
+           this.gameLog.show();
         }
-        
+
         //zeichnet SChiffe
         for(var ship of this.ships){
             //prüft ob das Schiff grade bewegt wird, wenn ja wird es auf
@@ -340,7 +340,7 @@ function GameManager(){
                 this.gameStarted = true;
                 this.gameTurn = data[1];
                 var turnMsg = (this.gameTurn%2==0) ? "You go first!" : "Enemy goes first!";
-                alert("The Game has started! " + turnMsg);   
+                alert("The Game has started! " + turnMsg);
             }else
                 if(data[0] == "Finish"){
                 //der Gegner hat gewonnen, wenn er "Finish" schickt
@@ -378,13 +378,13 @@ function GameManager(){
         }
     }
 
-    //zum aufrufen der rekusiven Methode und zum zurücksetzten der Speicherung die 
+    //zum aufrufen der rekusiven Methode und zum zurücksetzten der Speicherung die
     //bei dem rekusiven Algorithmus benötigt wird
     this.placeShipsRandom = function(){
         //ruft die Methode mit dem umgedrehten array Ships auf, damit es mit dem größten startet
         this.placeShipsRandomRec(this.ships.reverse(), this.gameFields[1].centerPoints, 0, 5);
         this.ships.reverse();
-        //setzt die gespeicherten Felder wieder auf null damit man die Schiffe noch bewegen kann 
+        //setzt die gespeicherten Felder wieder auf null damit man die Schiffe noch bewegen kann
         if(!this.shipPosSafed){
             for(var ship of this.ships){
                 ship.coverdFields = null;
@@ -411,8 +411,8 @@ function GameManager(){
             var y;
             var result;
             var curRotation = 0;
-            //while oder do-while ist mehr oder weniger egal 
-            //aus vorheriger version wurde do-While behalten 
+            //while oder do-while ist mehr oder weniger egal
+            //aus vorheriger version wurde do-While behalten
             do{
                 //zufälliges x und y erzeugt (floor "rundet" auf eine ganze Zahl)
                 x = floor(random(0, center.length-1));
@@ -427,7 +427,7 @@ function GameManager(){
                 result = ships_[i].checkValidPosition(this.ships);
                 //entfernt die Position aus dem Array der Mittelpunkte damit wir eine endliche
                 //Menge an möglichkeiten zum plazieren der Schiffe haben
-                //sollten wir einen schritt zurück gehen steht das alte Array mit den bisdahing 
+                //sollten wir einen schritt zurück gehen steht das alte Array mit den bisdahing
                 //noch nicht benutzten Mittelpunkten noch zur verfügung da wir am anfang eine Kopie gemacht haben
                 center = this.removeIndexFromArray(center, x, y);
                 //wenn das Schiff auf einer Validen Position steht, wird die Rekusion aufgerufen
@@ -436,7 +436,7 @@ function GameManager(){
                 if(result && this.placeShipsRandomRec(ships_, center, i+1, rotations)){
                     return true;
                 }
-                //sollte das Schiff an keiner Validen Position stehen erhöhen wir den counter 
+                //sollte das Schiff an keiner Validen Position stehen erhöhen wir den counter
                 //und versuchen es an einer andere Position
                 curRotation++;
                 //es werden soviele Positionen versucht wie rotations groß ist
@@ -450,7 +450,7 @@ function GameManager(){
     this.setPos = function(ship, x, y){
         //setzt das Schiff auf x & y ins unsere GameField
         ship.setPositionInPixel(x, y, this.gameFields[1]);
-        //es besteht eine 50% chance, dass das Schiff noch gedreht wird; 
+        //es besteht eine 50% chance, dass das Schiff noch gedreht wird;
         if(random() > 0.5){
             ship.rotate(this.gameFields[1]);
         }
@@ -459,7 +459,7 @@ function GameManager(){
         //das wird in der "Hauptmethode" wieder rückgängig gemacht
         ship.setCoverdFields();
     }
-    
+
     //die Methode removed ein spezielles Element aus einem 2D Array
     this.removeIndexFromArray = function(center, x, y){
         //das array wird kopiert
