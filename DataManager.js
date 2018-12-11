@@ -77,6 +77,10 @@ function DataManager(){
 			if(json.type === "enemyDisconnected"){
 				this.enemyDisconnected();
 			}
+			if(json.type === "enemyJoined"){
+				console.log("The enemy is connected");
+				closeOverlay();
+			}
         }else
         //Nachricht an den Chat
         if(json.receiver == "CH"){

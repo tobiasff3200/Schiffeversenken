@@ -81,8 +81,12 @@ wsServer.on('request', function(request) {
 					let data = {receiver: "GM", type: "gameJoined", data: token};
 					connection.sendUTF(
 							JSON.stringify({"utf8Data": data}));
-							console.log(games);
-							console.log(gameClients);
+					data = {receiver: "DM", type: "enemyJoined", data: token};
+					console.log("Inform the enemy that the Game is ready");
+					clients[gameSelect(index, gameToken)].sendUTF(
+							JSON.stringify({"utf8Data": data}));
+					console.log(games);
+					console.log(gameClients);
 					return;
 				}
 
