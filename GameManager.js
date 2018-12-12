@@ -188,7 +188,7 @@ function GameManager(){
         //wenn die schiffe schon gespeichert wurden kann man abbrechen
         if(this.shipPosSafed){
             this.deletSafedShipPosition();
-            this.gameAlert.alert("Position of the ships where deleted", color("Green"))
+            this.gameAlert.alert("Position of the ships was deleted", color("Green"))
             return
         }
         this.shipPosSafed = true;
@@ -205,11 +205,11 @@ function GameManager(){
             for(var ship of this.ships){
                 ship.coverdFields = null;
             }
-            this.gameAlert.alert("Ships wasn't place correctly!", color("Red"));
+            this.gameAlert.alert("Ships wasnt placed correctly!", color("Red"));
             //alert("Die Schiffe sind nicht richtig platziert worden, \n" +
               //    "Bitte beachten Sie die Regeln");
         }else{
-            this.gameAlert.alert("Position of the ships were safed", color("Green"));
+            this.gameAlert.alert("Position of the ships was saved", color("Green"));
             //alert("Position der Schiffe wurde gespeichert")
         }
         return this.shipPosSafed;
@@ -230,6 +230,9 @@ function GameManager(){
         if(!this.gameStarted && this.shipPosSafed){
             this.youReady = true;
             this.sendReady();
+        }else
+        if(!this.shipPosSafed){
+            this.gameAlert.alert("Ships position wasnt saved!", color("red"));
         }
     }
 
@@ -248,7 +251,7 @@ function GameManager(){
     //prüft im übergebenen GameField auf welches Feld geklickt wurde und
     //falls eins gefunden wird, auf das noch nicht geschossen wurde, wird darauf geschossen
     this.shootAtClickedField = function(xPix, yPix, game){
-        var fieldInizes  = game.convertPixPosInFieldIndex(xPix, yPix);
+        var fieldInizes = game.convertPixPosInFieldIndex(xPix, yPix);
         //prüft ob das Feld existiert und ob es noch nicht beschossen wurde
         //nur wenn das spiel gestartet hat
         if(this.gameStarted && fieldInizes != null && game.fieldStates[fieldInizes.x][fieldInizes.y] == EMPTY){
@@ -256,6 +259,20 @@ function GameManager(){
             //inputs geblocked werden
             this.dataManager.send("GM", "Ask", [fieldInizes.x, fieldInizes.y]);
             this.waitingForServer = true;
+        }
+    }
+    
+    //fuktion für den Timer! Schießt auf ein zufälliges Feld
+    this.shootAtRandomPosition = function(){
+        if(this.gameTurn%2 == 0){
+            var center = this.gameFields[0].centerPoints.slice();
+            var x, y;
+            do{
+                x = floor(random(0, center.length-1));
+                y = floor(random(0, center[x].length-1));
+            }while(this.gameFields[0].fieldStates == EMPTY);
+            var pos = center[x][y];
+            this.shootAtClickedField(pos.x, pos.y, this.gameFields[0]);
         }
     }
 

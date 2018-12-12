@@ -4,10 +4,11 @@ var gameManager;
 var dataManager;
 var chat;
 var userInterface;
+var timer;
 
 function setup() {
     cnv = createCanvas(700, 700);       //eigentliche größe 600, 550
-    cnv.position((windowWidth - 600)/2, (windowHeight - 550)/2);
+    cnv.position((windowWidth - 600)/2, 0);
     gameManager = new GameManager();
     dataManager = new DataManager();
     chat = new Chat(285, 20, 250, 200);
@@ -16,6 +17,8 @@ function setup() {
     gameManager.setup(dataManager);
     chat.setup();
     userInterface.setup(gameManager);
+    timer = new Timer(540, 13, 20);
+    timer.setup(gameManager, 30);
 }
 
 function draw() {
@@ -25,6 +28,7 @@ function draw() {
     if(!gameManager.gameStarted){
         userInterface.show();   
     }
+    timer.show();
 }
 
 
@@ -51,5 +55,9 @@ function mouseReleased(){
 }
 
 function windowResized(){
-    cnv.position((windowWidth - width)/2, (windowHeight - height)/2);
+    cnv.position((windowWidth - width)/2, 0);
 }
+
+window.onbeforeunload = function(){
+    alert("Sind sie sicher, dass sie die Website verlassen möchten?");
+} 

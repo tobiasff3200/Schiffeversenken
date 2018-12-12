@@ -65,17 +65,6 @@ function DataManager(){
             if(json.type === "Ask" && index == -1){
                 this.gameManager.receiveQuestion(json.data, json.number);
             }
-			// if type == "gameCreated"
-			if(json.type === "gameCreated"){
-				this.gameCreated(json.data);
-			}
-
-			if(json.type === "gameJoined"){
-				this.gameJoined(json.data);
-			}
-			if(json.type === "enemyDisconnected"){
-				this.enemyDisconnected();
-			}
         }else
         //Nachricht an den Chat
         if(json.receiver == "CH"){
@@ -84,7 +73,19 @@ function DataManager(){
             if(json.type === "Reply"){
                 this.chat.postMsg(json.data);
             }
-        }
+        }//else{
+        //if(json.receiver == "DM"){
+            
+			if(json.type === "gameCreated"){
+				this.gameCreated(json.data);
+			}
+			if(json.type === "gameJoined"){
+				this.gameJoined(json.data);
+			}
+			if(json.type === "enemyDisconnected"){
+				this.enemyDisconnected();
+			}
+        //}
 	}
 
 	//--------------GameSelect------------------------------------------------//
