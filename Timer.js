@@ -28,6 +28,7 @@ function Timer(x, y, radius){
     }
     
     this.stopTimer = function(){
+        this.gameManager.shootAtRandomPosition();
         this.timerActive = false;
         this.timeAtActivation = [];
     }

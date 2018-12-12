@@ -53,10 +53,12 @@ function GameManager(){
         //koordinaten und größe und ob angeziegt werden soll wer dran ist
         this.gameLog = new GameLog(260, 310, 300, 150, true);
         this.gameAlert = new GameLog(250, 250, 320, 40, false);
+        this.timer = new Timer(540, 13, 20);
         this.gameFields[0].setup();
         this.gameFields[1].setup();
         this.gameLog.setup(this);
         this.gameAlert.setup(this);
+        this.timer.setup(this, 30);
         for(var i = 0; i < SHIPLENGTH.length; i++){
             this.ships[i] = new Ship(30+(SIZE)*i, 500, SHIPLENGTH[i]);
             this.ships[i].setup();
@@ -73,7 +75,7 @@ function GameManager(){
            this.gameLog.show(); 
         }
         this.gameAlert.show();
-        
+        this.timer.show();
         //zeichnet SChiffe
         for(var ship of this.ships){
             //prüft ob das Schiff grade bewegt wird, wenn ja wird es auf
@@ -358,7 +360,9 @@ function GameManager(){
                 //und die inputs freigegeben
                 this.waitingForServer = false;
                 //alert("Its your turn!");
-                this.gameAlert.alert("Its your turn!", color("Green"))
+                this.gameAlert.alert("Its your turn!", color("Green"));
+                //
+                this.timer.startTimer();
             }else
             if(data[0] == "Ready"){
                 if(this.youReady){

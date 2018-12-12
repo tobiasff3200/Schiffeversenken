@@ -4,7 +4,6 @@ var gameManager;
 var dataManager;
 var chat;
 var userInterface;
-var timer;
 
 function setup() {
     cnv = createCanvas(700, 700);       //eigentliche größe 600, 550
@@ -17,8 +16,6 @@ function setup() {
     gameManager.setup(dataManager);
     chat.setup();
     userInterface.setup(gameManager);
-    timer = new Timer(540, 13, 20);
-    timer.setup(gameManager, 30);
 }
 
 function draw() {
@@ -28,7 +25,6 @@ function draw() {
     if(!gameManager.gameStarted){
         userInterface.show();   
     }
-    timer.show();
 }
 
 
