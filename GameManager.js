@@ -361,7 +361,7 @@ function GameManager(){
                 this.waitingForServer = false;
                 //alert("Its your turn!");
                 this.gameAlert.alert("Its your turn!", color("Green"));
-                //
+                //startet den Timer. Bei ablauf wird zufällig geschossen
                 this.timer.startTimer();
             }else
             if(data[0] == "Ready"){
