@@ -13,9 +13,7 @@ function Timer(x, y, radius){
     
     this.show = function(){
         if(this.timerActive && this.checkTimeOver()){
-            gameManager.shootAtRandomPosition();
             this.stopTimer();
-            console.log("Timeout!");
         }
         this.drawTimer();
     }
@@ -28,16 +26,23 @@ function Timer(x, y, radius){
     }
     
     this.stopTimer = function(){
+        console.log("Timeout!");
         this.gameManager.shootAtRandomPosition();
         this.timerActive = false;
-        this.timeAtActivation = [];
+    }
+    
+    this.cancleTimer = function(){
+        console.log("Canceled");
+        this.timerActive = false;
     }
     
     //true = Zeit abgelaufen, false = Zeit noch nicht abgelaufen 
     this.checkTimeOver = function(){
         var currTime = new Date();
-        return currTime.getMinutes() >= this.timeAtActivation[0] + parseInt(this.maxTime/60) &&
-                currTime.getSeconds() >= this.timeAtActivation[1] + parseInt(this.maxTime%60);
+        var minsToComplete = this.timeAtActivation[0] + parseInt((this.timeAtActivation[1] + this.maxTime)/60);
+        var secToComplete = (this.timeAtActivation[1] + this.maxTime)%60;
+        return currTime.getMinutes() >= minsToComplete &&
+                currTime.getSeconds() >= secToComplete;
     }
     
     this.drawTimer = function(){
@@ -48,14 +53,16 @@ function Timer(x, y, radius){
         strokeWeight(4);
         rotate(-HALF_PI);
         var end = TWO_PI*this.calcSecondsLeft()/this.maxTime;
-        arc(0, 0, radius, radius, 0, (end > 0 ? end : TWO_PI*0.9999));
+        arc(0, 0, radius, radius, 0, (this.timerActive && end > 0) ? end : TWO_PI*0.9999);
         
         rotate(HALF_PI);
         fill(255);
         noStroke();
         textAlign(CENTER, CENTER);
         textSize(13);
-        text(this.calcSecondsLeft(), 0, 0);
+        if(this.timerActive){
+            text(this.calcSecondsLeft(), 0, 0);
+        }
         pop();
     }
     
