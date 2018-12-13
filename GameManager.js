@@ -309,6 +309,8 @@ function GameManager(){
                 //bei daneben :
                 //setzte Status des Feldes auf MISS
                 this.gameFields[0].setState(x, y, MISS);
+                //canceled den Timer weil er nicht abgelaufen ist aber auch nicht weiter laufen muss
+                this.timer.cancleTimer();
                 //sag dem Server der andere Spieler ist dran
                 this.dataManager.send("GM", "Reply", [NEXTTURN]);
                 //postet die Nachricht dass nichts getroffen wrude
@@ -345,7 +347,9 @@ function GameManager(){
                     //alert("You hit a Ship! Shoot another one!");
                     this.gameAlert.alert("You hit a Ship! Shoot another one!", color("Green"));
                 }
+                this.timer.startTimer();
             }
+            //startet den Timer erneut weil man ein 2. mal schießen darf
             //es wird nicht mehr auf den Server gewartet
             this.waitingForServer = false;
         }
@@ -368,6 +372,8 @@ function GameManager(){
                 if(this.youReady){
                     this.enemyReady = true;
                     this.sendReady();
+                    //startet den Timer weil das Spiel angefangen hat
+                    this.timer.startTimer();
                 }else{
                     //wenn nicht wird der Gegner auf Ready gesetzt und
                     //dem Spieler wird mitgeteilt dass der Gegner ready ist
@@ -381,7 +387,14 @@ function GameManager(){
                 this.enemyReady = true;
                 this.gameStarted = true;
                 this.gameTurn = data[1];
-                var turnMsg = (this.gameTurn%2==0) ? "You go first!" : "Enemy goes first!";
+                //definiert die turnMsg und startet den Timer
+                var turnMsg;
+                if(this.gameTurn%2==0){
+                    turnMsg = "You go first!";
+                    this.timer.startTimer();
+                }else{
+                   turnMsg = "Enemy goes first!"; 
+                }
                 //alert("The Game has started! " + turnMsg);   
                 this.gameAlert.alert("The Game has started! " + turnMsg, color("Green"))
             }else
@@ -407,7 +420,14 @@ function GameManager(){
                 var enemeyTurn = (first == "Enemy") ? 0 : 1;
                 this.dataManager.send("GM", "Reply", ["Start", enemeyTurn]);
                 this.gameStarted = true;
-                var turnMsg = (this.gameTurn%2==0) ? "You go first!" : "Enemy goes first!";
+                //printet aus wer dran ist und startet den Timer falls der SPieler als erstes ist
+                var turnMsg;
+                if(this.gameTurn%2==0){
+                    turnMsg = "You go first!";
+                    this.timer.startTimer();
+                }else{
+                   turnMsg = "Enemy goes first!"; 
+                }
                 //alert("The game has started! " + turnMsg);
                 this.gameAlert.alert("The game has started! " + turnMsg, color("Green"))
             }else{
