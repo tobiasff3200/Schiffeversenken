@@ -135,6 +135,7 @@ function changeOverlay(){
 	$("#gameToken, #joinGame2").removeClass("hidden");
 	$("#createGame, #joinGame").addClass("hidden");
 }
+
 function closeOverlay(){
 	$('#overlay').addClass('hidden');
     gameManager.waitingForServer = false;

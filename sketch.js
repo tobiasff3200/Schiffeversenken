@@ -1,9 +1,10 @@
-var cnv
+var cnv;
 
 var gameManager;
 var dataManager;
 var chat;
 var userInterface;
+var computer;
 
 function setup() {
     cnv = createCanvas(700, 700);       //eigentliche größe 600, 550
@@ -16,6 +17,7 @@ function setup() {
     gameManager.setup(dataManager);
     chat.setup();
     userInterface.setup(gameManager);
+    computer = new Computer();
 }
 
 function draw() {

@@ -26,14 +26,14 @@ function Timer(x, y, radius){
     }
     
     this.stopTimer = function(){
-        console.log("Timeout!");
         this.gameManager.shootAtRandomPosition();
         this.timerActive = false;
+        this.timeAtActivation = [0, 0];
     }
     
     this.cancleTimer = function(){
-        console.log("Canceled");
         this.timerActive = false;
+        this.timeAtActivation = [0, 0];
     }
     
     //true = Zeit abgelaufen, false = Zeit noch nicht abgelaufen 
@@ -52,8 +52,8 @@ function Timer(x, y, radius){
         stroke(color(this.timerActive ? "red" : "green"));
         strokeWeight(4);
         rotate(-HALF_PI);
-        var end = TWO_PI*this.calcSecondsLeft()/this.maxTime;
-        arc(0, 0, radius, radius, 0, (this.timerActive && end > 0) ? end : TWO_PI*0.9999);
+        var end = TWO_PI*this.calcSecondsLeft()/this.maxTime*0.99999;
+        arc(0, 0, radius, radius, 0, (this.timerActive && end > 0) ? end : TWO_PI*0.99999);
         
         rotate(HALF_PI);
         fill(255);
