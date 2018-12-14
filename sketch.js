@@ -27,6 +27,8 @@ function draw() {
     if(!gameManager.gameStarted){
         userInterface.show();   
     }
+    
+    computer.show();
 }
 
 

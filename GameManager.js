@@ -58,7 +58,7 @@ function GameManager(){
         this.gameFields[1].setup();
         this.gameLog.setup(this);
         this.gameAlert.setup(this);
-        this.timer.setup(this, 3);
+        this.timer.setup(this, 2);
         for(var i = 0; i < SHIPLENGTH.length; i++){
             this.ships[i] = new Ship(30+(SIZE)*i, 500, SHIPLENGTH[i]);
             this.ships[i].setup();
@@ -274,7 +274,6 @@ function GameManager(){
                 y = floor(random(0, center[x].length));
             }while(this.gameFields[0].fieldStates[x][y] != EMPTY);
             var pos = center[x][y];
-            this.gameFields[0].setState(x, y, -1);
             this.shootAtClickedField(pos.x, pos.y, this.gameFields[0]);
         }
     }
