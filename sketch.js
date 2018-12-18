@@ -5,30 +5,35 @@ var dataManager;
 var chat;
 var userInterface;
 var computer;
+var playOffline = false;
 
 function setup() {
     cnv = createCanvas(700, 700);       //eigentliche größe 600, 550
     cnv.position((windowWidth - 600)/2, 0);
     gameManager = new GameManager();
     dataManager = new DataManager();
+    if(playOffline){
+        computer = new Computer();
+        closeOverlay();
+    }
     chat = new Chat(285, 20, 250, 200);
     userInterface = new UserInterface(260, 310);
-    dataManager.setup(gameManager, chat);
-    gameManager.setup(dataManager);
+    dataManager.setup(gameManager, chat, computer);
+    gameManager.setup(dataManager, playOffline);
     chat.setup();
+    if(computer != null)
+        computer.setup(dataManager);
     userInterface.setup(gameManager);
-    computer = new Computer();
 }
 
 function draw() {
     background(0);
     gameManager.show();
     chat.show();
-    if(!gameManager.gameStarted){
-        userInterface.show();   
-    }
-    
-    computer.show();
+    if(computer != null)
+        computer.show();
+    if(!gameManager.gameStarted)
+        userInterface.show();       
 }
 
 
