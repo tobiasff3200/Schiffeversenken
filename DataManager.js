@@ -31,19 +31,19 @@ function DataManager(){
                 this.sendedDataComputer.push(randNum);
             }else{
                 this.sendedData.push(randNum);
-            }     
+            }
         }
-        
+
         console.log("Erfolgreich gesendet: " + JSON.stringify({ number: randNum, receiver: receiver, type: type, data: data}));
         //wenn der empfänger nicht der Computer ist und es den Computer nicht gibt
-        if(receiver != "Comp" && this.computer == null){ //  
-            this.websocket.connection.send(JSON.stringify({ number: randNum, receiver: receiver, type: type, data: data})); 
+        if(receiver != "Comp" && this.computer == null){ //
+            this.websocket.connection.send(JSON.stringify({ number: randNum, receiver: receiver, type: type, data: data}));
             return;
-        }  
-        
+        }
+
         //wenn der Empfänger der Computer ist oder der Computer exestiert, dann brauch die Nachricht nicht an der Server gesendet werden (spiel offline)
         this.receiveData(JSON.stringify({ number: randNum, receiver: receiver, type: type, data: data}));
-		
+
     }
 
 	this.receiveData = function(input){
@@ -79,7 +79,7 @@ function DataManager(){
             }
         }//else{
         //if(json.receiver == "DM"){
-            
+
 			if(json.type === "gameCreated"){
 				this.gameCreated(json.data);
 			}
@@ -91,16 +91,16 @@ function DataManager(){
 			}
         //}
 	}
-    
-    
+
+
     this.receiveDataForGame = function(json, rec){
         var receiver = rec == "GM" ? this.gameManager : (rec == "Comp" ? this.computer : null);
-        //if typ == "Reply" -> execute gameManager.receiveReply(data); 
+        //if typ == "Reply" -> execute gameManager.receiveReply(data);
         if(json.type === "Reply"){
             receiver.receiveReply(json.data);
             return;
         }
-        
+
         var arrayToSearch = [];
         if(rec == "GM"){
             arrayToSearch = this.sendedData;
@@ -126,18 +126,18 @@ function DataManager(){
 	this.createGame = function(){
         this.send("GM", "createGame", "", "");
 	}
-    
+
 	this.gameCreated = function(token){
 		this.gameToken = token;
-		$("#createGame, #joinGame").addClass("hidden");
+		$("#createGame, #joinGame, #playOffline").addClass("hidden");
 		$("#gameInfo").text("Game Token: "+token);
 		$("#close, #gameInfo").removeClass("hidden");
 	}
-    
+
 	this.joinGame = function(token){
 			this.send("GM", "joinGame", token, "");
 	}
-    
+
 	this.gameJoined = function(token){
 		if(token == -1){
 			alert("joining failed");
@@ -147,6 +147,13 @@ function DataManager(){
 			console.log("Joined succesfully");
 		}
 	}
+
+	this.createComputer = function(){
+		playOffline = true;
+		closeOverlay();
+		setup();
+	}
+
 	this.checkUrl = function(){
 		var url_string = window.location.href;
 		var url = new URL(url_string);
@@ -158,7 +165,7 @@ function DataManager(){
 			console.log("No game found in URL");
 		}
 	}
-    
+
 	this.enemyDisconnected = function(){
 		alert("Enemy disconnected");
 	}
@@ -167,7 +174,7 @@ function DataManager(){
 
 function changeOverlay(){
 	$("#gameToken, #joinGame2").removeClass("hidden");
-	$("#createGame, #joinGame").addClass("hidden");
+	$("#createGame, #joinGame, #playOffline").addClass("hidden");
 }
 
 function closeOverlay(){

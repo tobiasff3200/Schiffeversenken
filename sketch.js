@@ -14,7 +14,6 @@ function setup() {
     dataManager = new DataManager();
     if(playOffline){
         computer = new Computer();
-        closeOverlay();
     }
     chat = new Chat(285, 20, 250, 200);
     userInterface = new UserInterface(260, 310);
@@ -33,26 +32,26 @@ function draw() {
     if(computer != null)
         computer.show();
     if(!gameManager.gameStarted)
-        userInterface.show();       
+        userInterface.show();
 }
 
 
 //die Methode callInput gibt true zurück wenn sie mit "KeyPressed" aufgerufen wurde
-//dadruch wird sichergestellt, dass wenn man was in den chat schreibt man keine 
+//dadruch wird sichergestellt, dass wenn man was in den chat schreibt man keine
 //Tastenkombination vom GameManager aufrufen möchte
 //wird ggf. noch entfernt falls wir uns für buttons entscheiden
 function keyPressed(){
     if(!chat.callInput("KeyPressed", [key, keyCode])){
         gameManager.callInput("KeyPressed", key);
     }
-    
-}   
+
+}
 
 function mousePressed(){
     gameManager.callInput("MousePressed", createVector(mouseX, mouseY));
     chat.callInput("MousePressed", createVector(mouseX, mouseY));
     userInterface.mousePressed();
-} 
+}
 
 function mouseReleased(){
     gameManager.callInput("MouseReleased", createVector(mouseX, mouseY));
@@ -65,4 +64,4 @@ function windowResized(){
 
 window.onbeforeunload = function(){
     alert("Sind sie sicher, dass sie die Website verlassen möchten?");
-} 
+}
