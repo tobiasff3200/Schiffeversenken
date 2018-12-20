@@ -23,7 +23,7 @@ h1{
 	margin: auto;
 	width: 75%;
 	height: 60vh;
-	margin: auto;
+	margin: 0 auto;
 	margin-top: 15vh;
 	background-color: black;
 	text-align: center;
@@ -34,9 +34,12 @@ h1{
 .button{
 	background-color: black;
 	color: white;
+    text-align: center;
+    margin: auto;
 	border:solid white 3px;
 	font-size: 1.1em;
 	transition: display 1s;
+    display: block;
 }
 .hidden{
 	display: none;
