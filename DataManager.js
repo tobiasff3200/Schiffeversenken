@@ -147,8 +147,9 @@ function DataManager(){
 		}
 	}
 
-	this.createComputer = function(){
+	this.createComputer = function(dif){
 		playOffline = true;
+		dificulty = dif;
 		closeOverlay();
 		setup();
 	}
@@ -175,24 +176,28 @@ function changeOverlay(step){
 	switch (step) {
 		case 1:
 			$("#step1").removeClass("hidden");
-			$("#step2, #step3, #step4").addClass("hidden");
+			$("#step2, #step3, #step4, #step5").addClass("hidden");
 			break;
 
 		case 2:
 			$("#step2").removeClass("hidden");
-			$("#step1, #step3, #step4").addClass("hidden");
+			$("#step1, #step3, #step4, #step5").addClass("hidden");
 			break;
 
 		case 3:
 			$("#step3").removeClass("hidden");
-			$("#step1, #step2, #step4").addClass("hidden");
+			$("#step1, #step2, #step4, #step5").addClass("hidden");
 			break;
 
 		case 4:
 			$("#step4").removeClass("hidden");
-			$("#step1, #step2, #step3").addClass("hidden");
+			$("#step1, #step2, #step3, #step5").addClass("hidden");
 			break;
-			
+
+		case 5:
+			$("#step5").removeClass("hidden");
+			$("#step1, #step2, #step3, #step4").addClass("hidden");
+
 		default:
 	}
 }

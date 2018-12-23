@@ -16,7 +16,9 @@ function Computer(){
     this.gameHandler = null;
     //speichert die möglichkeiten die der Computer hat zu schießen (siehe Konstaten)
     this.stateField = [];
-    
+	// setzt die Schwierigkeit
+	this.randomShootPercent = 0;
+
     //speichert die Koordinaten von den getroffenen Schüssen des zuletzt getroffenen Schiffes
     this.lastPositionsHit = [];
     //speichert die Position aller zerstörten Schiffe
@@ -36,8 +38,28 @@ function Computer(){
         this.firstShots = 0;
         this.frameCount = 0;
         this.showStateField = true;
+		this.setDificulty();
     }
-    
+
+	this.setDificulty = function(){
+		console.log("Dificulty set");
+		if(dificulty != null){
+			switch (dificulty) {
+				case 1:
+					this.randomShootPercent = 0;
+					break;
+				case 2:
+					this.randomShootPercent = 0.2;
+					break;
+				case 3:
+					this.randomShootPercent = 0.5;
+					break;
+				default:
+					this.randomShootPercent = 0;
+			}
+		}
+	}
+
     this.show = function(){
         if(this.showStateField){
             this.calcAndSetTheValuesForStateField();
@@ -58,9 +80,14 @@ function Computer(){
             this.shootRandom();
             this.firstShots++;
         }else{
-            this.calcAndSetTheValuesForStateField();
-            var bestField = this.searchHighstValue();
-            this.shootAtField(bestField.x, bestField.y);
+			if(Math.random() < this.randomShootPercent){
+				console.log("Random Shoot");
+				this.shootRandom();
+			}else{
+                this.calcAndSetTheValuesForStateField();
+                var bestField = this.searchHighstValue();
+                this.shootAtField(bestField.x, bestField.y);
+			}
         }
     }
     
