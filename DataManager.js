@@ -129,9 +129,8 @@ function DataManager(){
 
 	this.gameCreated = function(token){
 		this.gameToken = token;
-		$("#createGame, #joinGame, #playOffline").addClass("hidden");
 		$("#gameInfo").text("Game Token: "+token);
-		$("#close, #gameInfo").removeClass("hidden");
+		changeOverlay(4);
 	}
 
 	this.joinGame = function(token){
@@ -172,9 +171,30 @@ function DataManager(){
 	//--------------End of GameSelect-----------------------------------------//
 }
 
-function changeOverlay(){
-	$("#gameToken, #joinGame2").removeClass("hidden");
-	$("#createGame, #joinGame, #playOffline").addClass("hidden");
+function changeOverlay(step){
+	switch (step) {
+		case 1:
+			$("#step1").removeClass("hidden");
+			$("#step2, #step3, #step4").addClass("hidden");
+			break;
+
+		case 2:
+			$("#step2").removeClass("hidden");
+			$("#step1, #step3, #step4").addClass("hidden");
+			break;
+
+		case 3:
+			$("#step3").removeClass("hidden");
+			$("#step1, #step2, #step4").addClass("hidden");
+			break;
+
+		case 4:
+			$("#step4").removeClass("hidden");
+			$("#step1, #step2, #step3").addClass("hidden");
+			break;
+			
+		default:
+	}
 }
 
 function closeOverlay(){

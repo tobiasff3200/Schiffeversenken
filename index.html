@@ -29,13 +29,22 @@
 			<h1>Schiffeversenken</h1>
 			<p>Descripion</p>
 			<div class="buttons" id="buttons">
-				<button class="button" id="createGame" onclick="dataManager.createGame()">Create Game</button>
-				<button class="button" id="joinGame" onclick="changeOverlay()">Join Game</button>
-				<button class="button" id="playOffline" onclick="dataManager.createComputer()">Play against the Computer</button>
-				<input class="hidden button" type="text" id="gameToken" autofocus placeholder="Game Token" spellcheck="false">
-				<button class="hidden button" id="joinGame2" onclick="dataManager.joinGame($('#gameToken').val())">Join Game</button>
-				<span class="hidden" id="gameInfo"></span><br>
-				<button class="hidden button" id="close" onclick="closeOverlay()">Close</button>
+				<div class="" id="step1">
+					<button class="button" onclick="changeOverlay(2)">Play against a Human</button>
+					<button class="button" onclick="dataManager.createComputer()">Play against the computer</button>
+				</div>
+				<div class="hidden" id="step2"> <!-- Play agaoinst a Human -->
+					<button class="button" onclick="dataManager.createGame()">Create Game</button>
+					<button class="button" onclick="changeOverlay(3)">Join Game</button>
+				</div>
+				<div class="hidden" id="step3"> <!-- Enter GameToken -->
+					<input class="button" type="text" id="gameToken" placeholder="Game Token" spellcheck="false" autofocus>
+					<button class="button" onclick="dataManager.joinGame($('#gameToken').val())">Join Game</button>
+				</div>
+				<div class="hidden" id="step4">
+					<span id="gameInfo"></span><br>
+					<button class="button" onclick="closeOverlay()">Close</button>
+				</div>
 			</div>
 		</div>
 	</div>
