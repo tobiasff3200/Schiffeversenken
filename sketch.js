@@ -6,7 +6,6 @@ var chat;
 var userInterface;
 var computer;
 var playOffline = false;
-var dificulty;
 
 function setup() {
     cnv = createCanvas(700, 700);       //eigentliche größe 600, 550

@@ -38,24 +38,24 @@ function Computer(){
         this.firstShots = 0;
         this.frameCount = 0;
         this.showStateField = true;
-		this.setDificulty();
     }
 
-	this.setDificulty = function(){
+	this.setDificulty = function(dificulty){
 		console.log("Dificulty set");
 		if(dificulty != null){
 			switch (dificulty) {
-				case 1:
-					this.randomShootPercent = 0;
+				case "Easy":
+					this.randomShootPercent = 0.9;
 					break;
-				case 2:
-					this.randomShootPercent = 0.2;
+				case "Middle":
+					this.randomShootPercent = 0.6;
 					break;
-				case 3:
-					this.randomShootPercent = 0.5;
+				case "Hard":
+					this.randomShootPercent = 0.3;
 					break;
 				default:
-					this.randomShootPercent = 0;
+                    //default is easy
+					this.randomShootPercent = 0.9;
 			}
 		}
 	}
@@ -67,7 +67,7 @@ function Computer(){
         }
         
         if(this.gameHandler.gameStarted && this.gameHandler.gameTurn%2 == 0 && this.frameCount%120 == 0){
-            this.shootAtBestField();
+            this.shoot();
             this.frameCount = 0;
         }
         if(this.frameCount%120 == 0)
@@ -75,19 +75,26 @@ function Computer(){
         this.frameCount++;
     }
     
+    this.shoot = function(){
+        var rnd = random();
+        if(this.lastPositionsHit.length != 0 || rnd > this.randomShootPercent){
+            this.shootAtBestField();
+            console.log("best");
+        }else{
+            this.shootRandom();
+            console.log("rnd");
+        }
+        
+    }
+    
     this.shootAtBestField = function(){
         if(this.firstShots < 5 && this.lastPositionsHit.length <= 0){
             this.shootRandom();
             this.firstShots++;
         }else{
-			if(Math.random() < this.randomShootPercent){
-				console.log("Random Shoot");
-				this.shootRandom();
-			}else{
-                this.calcAndSetTheValuesForStateField();
-                var bestField = this.searchHighstValue();
-                this.shootAtField(bestField.x, bestField.y);
-			}
+            this.calcAndSetTheValuesForStateField();
+            var bestField = this.searchHighstValue();
+            this.shootAtField(bestField.x, bestField.y);
         }
     }
     

@@ -149,9 +149,9 @@ function DataManager(){
 
 	this.createComputer = function(dif){
 		playOffline = true;
-		dificulty = dif;
 		closeOverlay();
 		setup();
+        computer.setDificulty(dif);
 	}
 
 	this.checkUrl = function(){
