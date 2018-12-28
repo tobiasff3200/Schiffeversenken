@@ -53,6 +53,9 @@ function Computer(){
 				case "Hard":
 					this.randomShootPercent = 0.3;
 					break;
+                case "Intermediate":
+                    this.randomShootPercent = 0.0;
+                    break;
 				default:
                     //default is easy
 					this.randomShootPercent = 0.9;
