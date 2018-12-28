@@ -44,7 +44,6 @@ function keyPressed(){
     if(!chat.callInput("KeyPressed", [key, keyCode])){
         gameManager.callInput("KeyPressed", key);
     }
-
 }
 
 function mousePressed(){

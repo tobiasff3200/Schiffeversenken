@@ -28,6 +28,8 @@ function GameManager(){
     this.shipPosSafed = false;
     //indikator dafür ob das Spiel angefangen hat oder nicht
     this.gameStarted = false;
+    //indikator ob jemand das Spiel gewonnen hat
+    this.gameEnd = false;
     //simbolisiert ob die Spieler bereit sind oder nicht
     this.youReady = false;
     this.enemyReady = false;
@@ -261,7 +263,7 @@ function GameManager(){
         var fieldInizes = game.convertPixPosInFieldIndex(xPix, yPix);
         //prüft ob das Feld existiert und ob es noch nicht beschossen wurde
         //nur wenn das spiel gestartet hat
-        if(this.gameStarted && fieldInizes != null && game.fieldStates[fieldInizes.x][fieldInizes.y] == EMPTY){
+        if(this.gameStarted && !this.gameEnd && fieldInizes != null && game.fieldStates[fieldInizes.x][fieldInizes.y] == EMPTY){
             //sende position an Server, und setzte waitingForServer auf true sodass alle
             //inputs geblocked werden
             this.dataManager.send(this.playOffline ? "Comp" : "GM", "Ask", [fieldInizes.x, fieldInizes.y]);
@@ -410,7 +412,8 @@ function GameManager(){
                 if(data[0] == "Finish"){
                 //der Gegner hat gewonnen, wenn er "Finish" schickt
                 //alert("You lose! Good luck next round");
-                this.gameAlert.alert("You lose! Good luck next round", color("Red"))
+                this.gameAlert.alert("You lose! Good luck next round", color("Red"));
+                this.gameEnd = true;
             }
         }
     }

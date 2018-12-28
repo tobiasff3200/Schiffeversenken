@@ -66,7 +66,8 @@ function Computer(){
             this.displayStateGameField();
         }
         
-        if(this.gameHandler.gameStarted && this.gameHandler.gameTurn%2 == 0 && this.frameCount%120 == 0){
+        if(this.gameHandler.gameStarted && !this.gameHandler.gameEnd 
+           && this.gameHandler.gameTurn%2 == 0 && this.frameCount%120 == 0){
             this.shoot();
             this.frameCount = 0;
         }
