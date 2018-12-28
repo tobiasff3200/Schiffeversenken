@@ -2,6 +2,7 @@ const YOU = 0;
 const ENEMY = 1;
 
 function Chat(x, y, wid, heig){
+    this.regExp = "s";
     //speichert den Gesamten chat
     this.chat = [];
     //speichert die momentan geschriebene Nachricht
@@ -96,6 +97,7 @@ function Chat(x, y, wid, heig){
     //wenn eine Taste gedrückt wurde
     this.keyPressedChat = function(key, keyCode){
         //führe das nur aus wenn der focus auf dem textfield liegt
+        console.log(key + " - " + keyCode);
         if(this.focus){
             //nur zugelassene Tasten sollen zur neuen Nachricht
             //hinzugefügt werden und die Nachricht darf nicht zu lang sein
@@ -151,7 +153,7 @@ function Chat(x, y, wid, heig){
 //---------------------------inputs--------------------------------//
     //prüft ob ein gültiger Buchstabe oder ein Zeichen gefrückt wurde
     this.checkValidKey = function(key){
-        return new RegExp("^[a-zA-Zß0-9 .öäü!?/()_-]+$").test(key);
+        return new RegExp("^[a-zA-Zß0-9 .,;:öäü!?/()_-]+$").test(key);
     }
     
     //schreibt die geschriebene Massage in den chat

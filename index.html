@@ -22,19 +22,36 @@
 	<script src="GameLog.js"></script>
 	<script src="UserInterface.js"></script>
 	<script src="Button.js"></script>
+    <script src="Timer.js"></script>
+    <script src="Computer.js"></script>
 
 	<div class="overlay" id="overlay">
 		<div class="overlay_content">
 			<h1>Battleship</h1>
 			<p>Describtion</p>
 			<div class="buttons" id="buttons">
-				<button class="button" id="createGame" onclick="dataManager.createGame()">Create Game</button>
-				<button class="button" id="joinGame" onclick="changeOverlay()">Join Game</button>
-				<input class="hidden button" type="text" id="gameToken" autofocus placeholder="Game Token" spellcheck="false">
-				<button class="hidden button" id="joinGame2" onclick="dataManager.joinGame($('#gameToken').val())">Join Game</button>
-				<span class="hidden" id="gameInfo"></span><br>
-				<button class="hidden button" id="close" onclick="closeOverlay()">Close</button>
-			</div>
+				<div class="" id="step1">
+					<button class="button" onclick="changeOverlay(2)">Play against a Human</button>
+					<button class="button" onclick="changeOverlay(5)">Play against the computer</button>
+				</div>
+				<div class="hidden" id="step2"> <!-- Play agaoinst a Human -->
+					<button class="button" onclick="dataManager.createGame()">Create Game</button>
+					<button class="button" onclick="changeOverlay(3)">Join Game</button>
+				</div>
+				<div class="hidden" id="step3"> <!-- Enter GameToken -->
+					<input class="button" type="text" id="gameToken" placeholder="Game Token" spellcheck="false" autofocus>
+					<button class="button" onclick="dataManager.joinGame($('#gameToken').val())">Join Game</button>
+				</div>
+				<div class="hidden" id="step4">
+					<span id="gameInfo"></span><br>
+					<button class="button" onclick="closeOverlay()">Close</button>
+				</div>
+				<div class="hidden" id="step5">
+					<button class="button" onclick="dataManager.createComputer('Easy')">Easy</button>
+					<button class="button" onclick="dataManager.createComputer('Middle')">Middle</button>
+					<button class="button" onclick="dataManager.createComputer('Hard')">Hard</button>
+			        <button class="button" onclick="dataManager.createComputer('Intermediate')">Intermediate</button>
+            </div>
 		</div>
 	</div>
 </body>

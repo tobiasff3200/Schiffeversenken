@@ -1,4 +1,4 @@
-function GameLog(x, y, wid, heig){
+function GameLog(x, y, wid, heig, showTurn){
     //speichert den Gesamten chat
     this.chat = [];
     //speichert die momentan geschriebene Nachricht
@@ -7,9 +7,10 @@ function GameLog(x, y, wid, heig){
     //definiert die höhe des Textes
     this.heightT;
     
-    
     this.fadeCount = 0;
     this.fadeMax = 60*2; //frames * sekunde
+    
+    this.alertColor;
     
     this.setup = function(gameManager){
         this.gameManager = gameManager;
@@ -37,10 +38,19 @@ function GameLog(x, y, wid, heig){
             //darf icht größer sein als das TextField
             if(heig/1.8-(this.heightT)*(this.chat.length-i) > -heig/3){
                 if(i == this.chat.length-1){
-                    //der letzte Zug soll farbig gekennzeichnet sein
-                    var from = color(255, this.chat[i][1]%2==0 ? 220 : 130);
-                    to = color(255, 114, 0, 240);
-                    fill(lerpColor(from, to, this.fadeCount/this.fadeMax));
+                    
+                    if(!showTurn){
+                        //die letzt nachricht soll von grau zu rot
+                        var c1 = this.alertColor;
+                        var c2 = color(255, 130); 
+                    }else{
+                        //der letzte Zug soll von rot zu grau oder weiß
+                        var c2 = color(255, 114, 0, 240);
+                        var c1 = color(255, this.chat[i][1]%2==0 ? 220 : 130); 
+                        
+                    }
+                                //from, to
+                    fill(lerpColor(c1, c2, this.fadeCount/this.fadeMax));             
                     //color gray - fill(255, 155);
                     //color pint - fill(255, 0, 255, 240);
                     //& in der Mitte stehen
@@ -64,9 +74,10 @@ function GameLog(x, y, wid, heig){
         //übersetzte den ursprung zurück auf 0,0
         translate(0, 0);
         pop();
-        
-        this.checkBox("Your turn", x+50, y+heig+20, (gameManager.gameTurn+1)%2);
-        this.checkBox("Enemy's turn", x+185, y+heig+20, (gameManager.gameTurn)%2);
+        if(showTurn){
+            this.checkBox("Your turn", x+50, y+heig+20, (gameManager.gameTurn+1)%2);
+            this.checkBox("Enemy's turn", x+185, y+heig+20, (gameManager.gameTurn)%2);
+        }
     }
     
     //schreibt die ÜBERGEBENE Nachricht in den chat, ohne dass man
@@ -79,6 +90,12 @@ function GameLog(x, y, wid, heig){
         var newMsg = [playerS + " shot at " + yString + xString + " and " + resultS + " a ship", turn];
         this.chat.push(newMsg);
         this.fadeCount = this.fadeMax;
+    }
+    
+    this.alert = function(msg, color){
+        this.chat.push([msg]);
+        this.fadeCount = this.fadeMax;
+        this.alertColor = color;
     }
     
     //function aus UserInterface

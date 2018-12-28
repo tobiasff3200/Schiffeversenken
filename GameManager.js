@@ -28,10 +28,12 @@ function GameManager(){
     this.shipPosSafed = false;
     //indikator dafür ob das Spiel angefangen hat oder nicht
     this.gameStarted = false;
+    //indikator ob jemand das Spiel gewonnen hat
+    this.gameEnd = false;
     //simbolisiert ob die Spieler bereit sind oder nicht
     this.youReady = false;
     this.enemyReady = false;
-    //speichert den aktuellen zug - n%2 == 0 => man darf schießen
+    //speichert den aktuellen Zug - n%2 == 0 => man darf schießen
     //das wird durch denjenigen der später bereit drückt zufällig entschieden wer als erstes dran ist und
     //an den gegner geschickt, der seine "Start Runde", dahingehend verändert. Das heißt wenn man
     //als erster dran ist bleibt gameTurn bei 0 aber wenn der gegner zuerst dran ist wird
@@ -46,17 +48,27 @@ function GameManager(){
 
     //initialiesiert alles wichtige für das Spiel
     //GameFields und Schiffe und ruft deren setup's auf
-    this.setup = function(dataManager){
+    this.setup = function(dataManager, playOffline){
         this.dataManager = dataManager;
         this.gameFields[0] = new GameField(20, 20, 10, 10);
         this.gameFields[1] = new GameField(20, 240, 10, 10);
-        this.gameLog = new GameLog(260, 300, 300, 140);
+        //koordinaten und größe und ob angeziegt werden soll wer dran ist
+        this.gameLog = new GameLog(260, 310, 300, 150, true);
+        this.gameAlert = new GameLog(250, 250, 320, 40, false);
+        this.timer = new Timer(540, 13, 20);
         this.gameFields[0].setup();
         this.gameFields[1].setup();
         this.gameLog.setup(this);
+        this.gameAlert.setup(this);
+        this.timer.setup(this, 30);
         for(var i = 0; i < SHIPLENGTH.length; i++){
             this.ships[i] = new Ship(30+(SIZE)*i, 500, SHIPLENGTH[i]);
             this.ships[i].setup();
+        }
+        if(playOffline != null){
+            this.playOffline = playOffline;
+        }else{
+            this.playOffline = false;
         }
     }
 
@@ -69,7 +81,8 @@ function GameManager(){
         if(this.gameStarted){
            this.gameLog.show();
         }
-
+        this.gameAlert.show();
+        this.timer.show();
         //zeichnet SChiffe
         for(var ship of this.ships){
             //prüft ob das Schiff grade bewegt wird, wenn ja wird es auf
@@ -183,6 +196,8 @@ function GameManager(){
     this.safeShipPosition = function(){
         //wenn die schiffe schon gespeichert wurden kann man abbrechen
         if(this.shipPosSafed){
+            this.deletSafedShipPosition();
+            this.gameAlert.alert("Position of the ships was deleted", color("Green"))
             return
         }
         this.shipPosSafed = true;
@@ -199,12 +214,21 @@ function GameManager(){
             for(var ship of this.ships){
                 ship.coverdFields = null;
             }
-            alert("Die Schiffe sind nicht richtig platziert worden, \n" +
-                  "Bitte beachten Sie die Regeln");
+            this.gameAlert.alert("Ships wasnt placed correctly!", color("Red"));
+            //alert("Die Schiffe sind nicht richtig platziert worden, \n" +
+              //    "Bitte beachten Sie die Regeln");
         }else{
-            alert("Position der Schiffe wurde gespeichert")
+            this.gameAlert.alert("Position of the ships was saved", color("Green"));
+            //alert("Position der Schiffe wurde gespeichert")
         }
         return this.shipPosSafed;
+    }
+
+    this.deletSafedShipPosition = function(){
+        for(var ship of this.ships){
+            ship.coverdFields = null;
+        }
+        this.shipPosSafed = false;
     }
 
     //prüft ob alle Bedingungen erfüllt wurden um das Spiel zu starten
@@ -215,6 +239,9 @@ function GameManager(){
         if(!this.gameStarted && this.shipPosSafed){
             this.youReady = true;
             this.sendReady();
+        }else
+        if(!this.shipPosSafed){
+            this.gameAlert.alert("Ships position wasnt saved!", color("red"));
         }
     }
 
@@ -232,20 +259,34 @@ function GameManager(){
 
     //prüft im übergebenen GameField auf welches Feld geklickt wurde und
     //falls eins gefunden wird, auf das noch nicht geschossen wurde, wird darauf geschossen
-    this.shootAtClickedField = function(xPix, yPix, game){
-        var fieldInizes  = game.convertPixPosInFieldIndex(xPix, yPix);
+    this.shootAtClickedField = function(xPix, yPix, game, test){
+        var fieldInizes = game.convertPixPosInFieldIndex(xPix, yPix);
         //prüft ob das Feld existiert und ob es noch nicht beschossen wurde
         //nur wenn das spiel gestartet hat
-        if(this.gameStarted && fieldInizes != null && game.fieldStates[fieldInizes.x][fieldInizes.y] == EMPTY){
+        if(this.gameStarted && !this.gameEnd && fieldInizes != null && game.fieldStates[fieldInizes.x][fieldInizes.y] == EMPTY){
             //sende position an Server, und setzte waitingForServer auf true sodass alle
             //inputs geblocked werden
-            this.dataManager.send("GM", "Ask", [fieldInizes.x, fieldInizes.y]);
-            this.waitingForServer = true;
+            this.dataManager.send(this.playOffline ? "Comp" : "GM", "Ask", [fieldInizes.x, fieldInizes.y]);
+            this.waitingForServer = !this.playOffline;  //wenn playOffline true soll w8ing server false bleiben
+        }
+    }
+
+    //fuktion für den Timer! Schießt auf ein zufälliges Feld
+    this.shootAtRandomPosition = function(){
+        if(this.gameTurn%2 == 0){
+            var center = this.gameFields[0].centerPoints.slice();
+            var x, y;
+            do{
+                x = floor(random(0, center.length));
+                y = floor(random(0, center[x].length));
+            }while(this.gameFields[0].fieldStates[x][y] != EMPTY);
+            var pos = center[x][y];
+            this.shootAtClickedField(pos.x, pos.y, this.gameFields[0]);
         }
     }
 
     //wird aufgerufen wenn der Gegner eine Anfrage geschickt hat
-    this.receiveQuestion = function(data, requestNumber){
+    this.receiveQuestion = function(data, requestNumber, test){
         //prüft ob die Daten vorhanden und in der richtigen größe sind
         if(data != null && data.length >= 2){
             var x = data[0];
@@ -256,10 +297,14 @@ function GameManager(){
                 //postet die Nachricht bei dem Schuss des Gegners passiert ist
                 this.gameLog.postMsg(x, y, result, this.gameTurn);
                 //wenn das ergebnis nicht null ist schicke es an den Gegner
-                this.dataManager.send("GM", "Ask", [x, y, result], requestNumber);
-                //es wird nicht mehr auf den Server gewartet
-                this.waitingForServer = true;
+                this.dataManager.send(this.playOffline ? "Comp" : "GM", "Ask", [x, y, result], requestNumber);
+                //es wird auf den Server gewartet
+                this.waitingForServer = !this.playOffline;
+            }else{
+                throw "Error with checkingShootAt";
             }
+        }else{
+            throw "Error with received Data";
         }
     }
 
@@ -275,11 +320,14 @@ function GameManager(){
                 //bei daneben :
                 //setzte Status des Feldes auf MISS
                 this.gameFields[0].setState(x, y, MISS);
+                //canceled den Timer weil er nicht abgelaufen ist aber auch nicht weiter laufen muss
+                this.timer.cancleTimer();
                 //sag dem Server der andere Spieler ist dran
-                this.dataManager.send("GM", "Reply", [NEXTTURN]);
+                this.dataManager.send(this.playOffline ? "Comp" : "GM", "Reply", [NEXTTURN]);
                 //postet die Nachricht dass nichts getroffen wrude
                 this.gameLog.postMsg(x, y, MISS, this.gameTurn);
-                alert("You miss. Nextturn!");
+                this.gameAlert.alert("You miss. Nextturn!", color("Blue"));
+                //alert("You miss. Nextturn!");
                 //erhöht die momentane Runde um 1 (gameTurn)
                 this.gameTurn++;
             }else if(data[2] >= HIT){
@@ -293,20 +341,25 @@ function GameManager(){
                     //Runde nicht erhöht
                     //sollte man gewonnen haben, wird der gegner benachrichtigt und das Spiel beendet
                     if(this.checkWin()){
-                        this.dataManager.send("GM", "Reply", ["Finish"]);
+                        this.dataManager.send(this.playOffline ? "Comp" : "GM", "Reply", ["Finish"]);
                         this.gameEnd = true;
-                        alert("Last ship destroyed, You've won the Game!");
+                        //alert("Last ship destroyed, You've won the Game!");
+                        this.gameAlert.alert("Last ship destroyed, You've won the Game!", color("Gold"));
                     }else{
                         //postet die Nachricht dass ein Schiff zerstört wurde im gameLog
                         this.gameLog.postMsg(x, y, DESTROYED, this.gameTurn);
                         //die anzahl aller Schiffe minus die schon zerstörten Schiffe = die restlichen Schiffe
-                        alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left");
+                        this.gameAlert.alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left", color("Green"));
+                        //alert("You have destroyed a Ship! " + (SHIPLENGTH.length - this.gameScore) + " left");
                     }
                 }else{
                     //postet die Nachricht dass ein Schiff getroffen wurde im gameLog
                     this.gameLog.postMsg(x, y, HIT, this.gameTurn);
-                    alert("You hit a Ship! Shoot another one!");
+                    //alert("You hit a Ship! Shoot another one!");
+                    this.gameAlert.alert("You hit a Ship! Shoot another one!", color("Green"));
                 }
+                //startet den Timer erneut weil man ein 2. mal schießen darf
+                this.timer.startTimer();
             }
             //es wird nicht mehr auf den Server gewartet
             this.waitingForServer = false;
@@ -321,16 +374,22 @@ function GameManager(){
                 this.gameTurn++;
                 //und die inputs freigegeben
                 this.waitingForServer = false;
-                alert("Its your turn!");
+                //alert("Its your turn!");
+                this.gameAlert.alert("Its your turn!", color("Green"));
+                //startet den Timer. Bei ablauf wird zufällig geschossen
+                this.timer.startTimer();
             }else
             if(data[0] == "Ready"){
                 if(this.youReady){
                     this.enemyReady = true;
                     this.sendReady();
+                    //startet den Timer weil das Spiel angefangen hat
+                    this.timer.startTimer();
                 }else{
                     //wenn nicht wird der Gegner auf Ready gesetzt und
                     //dem Spieler wird mitgeteilt dass der Gegner ready ist
-                    alert("The enemy is Ready!");
+                    //alert("The enemy is Ready!");
+                    this.gameAlert.alert("The enemy is Ready!", color("Green"))
                     this.enemyReady = true;
                 }
             }else
@@ -339,12 +398,22 @@ function GameManager(){
                 this.enemyReady = true;
                 this.gameStarted = true;
                 this.gameTurn = data[1];
-                var turnMsg = (this.gameTurn%2==0) ? "You go first!" : "Enemy goes first!";
-                alert("The Game has started! " + turnMsg);
+                //definiert die turnMsg und startet den Timer
+                var turnMsg;
+                if(this.gameTurn%2==0){
+                    turnMsg = "You go first!";
+                    this.timer.startTimer();
+                }else{
+                   turnMsg = "Enemy goes first!";
+                }
+                //alert("The Game has started! " + turnMsg);
+                this.gameAlert.alert("The Game has started! " + turnMsg, color("Green"))
             }else
                 if(data[0] == "Finish"){
                 //der Gegner hat gewonnen, wenn er "Finish" schickt
-                alert("You lose! Good luck next round");
+                //alert("You lose! Good luck next round");
+                this.gameAlert.alert("You lose! Good luck next round", color("Red"));
+                this.gameEnd = true;
             }
         }
     }
@@ -361,15 +430,24 @@ function GameManager(){
                 this.gameTurn = (first == "You") ? 0 : 1;
                 //für den Gegner gilt genau das gleiche nur umgedreht und es wird ihm gesendet
                 var enemeyTurn = (first == "Enemy") ? 0 : 1;
-                this.dataManager.send("GM", "Reply", ["Start", enemeyTurn]);
+                this.dataManager.send(this.playOffline ? "Comp" : "GM", "Reply", ["Start", enemeyTurn]);
                 this.gameStarted = true;
-                var turnMsg = (this.gameTurn%2==0) ? "You go first!" : "Enemy goes first!";
-                alert("The game has started! " + turnMsg);
+                //printet aus wer dran ist und startet den Timer falls der SPieler als erstes ist
+                var turnMsg;
+                if(this.gameTurn%2==0){
+                    turnMsg = "You go first!";
+                    this.timer.startTimer();
+                }else{
+                   turnMsg = "Enemy goes first!";
+                }
+                //alert("The game has started! " + turnMsg);
+                this.gameAlert.alert("The game has started! " + turnMsg, color("Green"))
             }else{
                 //wenn der Gegner noch nicht bereit wird ihm mitgeteilt, dass der
                 //Speiler bereit ist
-                this.dataManager.send("GM", "Reply", ["Ready"]);
-                alert("Waiting for enemy");
+                this.dataManager.send(this.playOffline ? "Comp" : "GM", "Reply", ["Ready"]);
+                //alert("Waiting for enemy");
+                this.gameAlert.alert("Waiting for enemy", color("Green"));
             }
         }else{
             //sollte die Methode aufgerufen werden obwohl man nicht

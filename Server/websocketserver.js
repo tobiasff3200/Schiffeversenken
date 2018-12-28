@@ -48,7 +48,7 @@ wsServer.on('request', function(request) {
 			let gameIndex = games.indexOf(gameToken);
 			gameClients[gameIndex] = [index, null];
 			console.log(games);
-			let data = {receiver: "GM", type: "gameCreated", data: gameToken};
+			let data = {receiver: "DM", type: "gameCreated", data: gameToken};
 			connection.sendUTF(
 					JSON.stringify({"utf8Data": data}));
 			console.log(JSON.stringify({"utf8Data": data}));
@@ -69,7 +69,7 @@ wsServer.on('request', function(request) {
 					joined = true;
 				}else{
 					console.log("Joining failed");
-					let data = {receiver: "GM", type: "gameJoined", data: -1};
+					let data = {receiver: "DM", type: "gameJoined", data: -1};
 					connection.sendUTF(
 							JSON.stringify({"utf8Data": data}));
 							console.log(games);
@@ -78,7 +78,7 @@ wsServer.on('request', function(request) {
 				if(joined){
 					console.log("joined succesfully");
 					gameToken = token;
-					let data = {receiver: "GM", type: "gameJoined", data: token};
+					let data = {receiver: "DM", type: "gameJoined", data: token};
 					connection.sendUTF(
 							JSON.stringify({"utf8Data": data}));
 					data = {receiver: "DM", type: "enemyJoined", data: token};
@@ -92,7 +92,7 @@ wsServer.on('request', function(request) {
 
 			}else{
 				console.log("Joining failed");
-				let data = {receiver: "GM", type: "gameJoined", data: -1};
+				let data = {receiver: "DM", type: "gameJoined", data: -1};
 				connection.sendUTF(
 						JSON.stringify({"utf8Data": data}));
 						console.log(games);
@@ -122,14 +122,13 @@ wsServer.on('request', function(request) {
 				gameClients.splice(gameIndex);
 				games.splice(gameIndex);
 			}else{
+                let data = {receiver: "DM", type: "enemyDisconnected", data: gameToken};
 				if(gameClients[gameIndex][0] == null){
-					let data = {receiver: "GM", type: "enemyDisconnected", data: gameToken};
 					clients[gameClients[gameIndex][1]].sendUTF(
-							JSON.stringify({"utf8Data": data}));
+                        JSON.stringify({"utf8Data": data}));
 				}else{
-					let data = {receiver: "GM", type: "enemyDisconnected", data: gameToken};
 					clients[gameClients[gameIndex][0]].sendUTF(
-							JSON.stringify({"utf8Data": data}));
+                        JSON.stringify({"utf8Data": data}));
 				}
 			}
 		}

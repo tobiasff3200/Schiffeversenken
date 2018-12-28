@@ -1,20 +1,27 @@
-var cnv
+var cnv;
 
 var gameManager;
 var dataManager;
 var chat;
 var userInterface;
+var computer;
+var playOffline = false;
 
 function setup() {
-    cnv = createCanvas(700, 700);
-    //cnv.position((windowWidth - width)/2, (windowHeight - height)/2);
+    cnv = createCanvas(700, 700);       //eigentliche größe 600, 550
+    cnv.position((windowWidth - 600)/2, 0);
     gameManager = new GameManager();
     dataManager = new DataManager();
+    if(playOffline){
+        computer = new Computer();
+    }
     chat = new Chat(285, 20, 250, 200);
-    userInterface = new UserInterface(260, 300);
-    dataManager.setup(gameManager, chat);
-    gameManager.setup(dataManager);
+    userInterface = new UserInterface(260, 310);
+    dataManager.setup(gameManager, chat, computer);
+    gameManager.setup(dataManager, playOffline);
     chat.setup();
+    if(computer != null)
+        computer.setup(dataManager);
     userInterface.setup(gameManager);
 }
 
@@ -22,9 +29,10 @@ function draw() {
     background(0);
     gameManager.show();
     chat.show();
-    if(!gameManager.gameStarted){
+    if(computer != null)
+        computer.show();
+    if(!gameManager.gameStarted)
         userInterface.show();
-    }
 }
 
 
@@ -36,7 +44,6 @@ function keyPressed(){
     if(!chat.callInput("KeyPressed", [key, keyCode])){
         gameManager.callInput("KeyPressed", key);
     }
-
 }
 
 function mousePressed(){
