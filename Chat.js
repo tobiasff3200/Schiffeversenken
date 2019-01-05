@@ -97,7 +97,6 @@ function Chat(x, y, wid, heig){
     //wenn eine Taste gedrückt wurde
     this.keyPressedChat = function(key, keyCode){
         //führe das nur aus wenn der focus auf dem textfield liegt
-        console.log(key + " - " + keyCode);
         if(this.focus){
             //nur zugelassene Tasten sollen zur neuen Nachricht
             //hinzugefügt werden und die Nachricht darf nicht zu lang sein

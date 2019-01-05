@@ -44,7 +44,7 @@ function GameManager(){
     //bis er die größe des Arrays der vorhandenen Schiffe hat -dann hat der spieler gewonnen
     this.gameScore = 0;
     //zeigt an ob momentan auf eine antwort vom server gewartet wird (blockiert alle inputs)
-    this.waitingForServer = true;
+    this.waitingForServer = false;
 
     //initialiesiert alles wichtige für das Spiel
     //GameFields und Schiffe und ruft deren setup's auf
