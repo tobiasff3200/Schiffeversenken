@@ -62,7 +62,7 @@ function Computer(){
     }
     
     this.keyPressed = function(key, keyCode){
-        if(key == "g" || key == "G"){
+        if(key == "%"){
             this.showStateField = this.showStateField ? false : true;
         }
     }
