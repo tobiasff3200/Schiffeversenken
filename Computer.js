@@ -37,10 +37,37 @@ function Computer(){
         this.stateField = this.convertGamesFieldStatesInComputerStateField(gameManager.gameFields[1].fieldStates);
         this.firstShots = 0;
         this.frameCount = 0;
-        this.showStateField = true;
     }
 
-	this.setDificulty = function(dificulty){
+    this.show = function(){
+        if(this.showStateField){
+            this.calcAndSetTheValuesForStateField();
+            this.displayStateGameField();
+        }
+        
+        if(this.gameHandler.gameStarted && !this.gameHandler.gameEnd 
+           && this.gameHandler.gameTurn%2 == 0 && this.frameCount%120 == 0){
+            this.shoot();
+            this.frameCount = 0;
+        }
+        if(this.frameCount%120 == 0)
+            this.frameCount = 0;
+        this.frameCount++;
+    }
+    
+    this.callInput = function(input, data){
+        if(input == "KeyPressed"){
+            this.keyPressed(data[0], data[1]);
+        }
+    }
+    
+    this.keyPressed = function(key, keyCode){
+        if(key == "g" || key == "G"){
+            this.showStateField = this.showStateField ? false : true;
+        }
+    }
+    
+    this.setDificulty = function(dificulty){
 		console.log("Dificulty set");
 		if(dificulty != null){
 			switch (dificulty) {
@@ -62,22 +89,6 @@ function Computer(){
 			}
 		}
 	}
-
-    this.show = function(){
-        if(this.showStateField){
-            this.calcAndSetTheValuesForStateField();
-            this.displayStateGameField();
-        }
-        
-        if(this.gameHandler.gameStarted && !this.gameHandler.gameEnd 
-           && this.gameHandler.gameTurn%2 == 0 && this.frameCount%120 == 0){
-            this.shoot();
-            this.frameCount = 0;
-        }
-        if(this.frameCount%120 == 0)
-            this.frameCount = 0;
-        this.frameCount++;
-    }
     
     this.shoot = function(){
         var rnd = random();

@@ -145,7 +145,7 @@ function GameManager(){
             this.safeShipPosition();
         }
         //prüft ob beide Spieler "ready" sind
-        if((key == 'p' || key == 'P')){
+        if(key == 'p' || key == 'P'){
             this.checkGameReadyToPlay();
         }
     }

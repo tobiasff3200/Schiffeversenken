@@ -8,7 +8,7 @@ function UserInterface(x, y){    // 260, 440
         //die Buttons werden mit Text, Position und der aufzurufenden Funktion wenn ein Button gedrückt wird
         this.buttons.push(new Button("Place ships random", x+100, y+20, 200, 40, this.buttonPressed));
         this.buttons.push(new Button("Save ships position", x+100, y+80, 200, 40, this.buttonPressed));
-        this.buttons.push(new Button("Ready", x+100, y+140, 200, 40, this.buttonPressed));  
+        this.buttons.push(new Button("Ready", x+100, y+140, 200, 40, this.buttonPressed));
     }
     
     this.show = function(){

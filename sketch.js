@@ -44,6 +44,9 @@ function keyPressed(){
     if(!chat.callInput("KeyPressed", [key, keyCode])){
         gameManager.callInput("KeyPressed", key);
     }
+    if(this.playOffline){
+        computer.callInput("KeyPressed", [key, keyCode]);
+    }
 }
 
 function mousePressed(){

@@ -12,10 +12,10 @@ function Timer(x, y, radius){
     }
     
     this.show = function(){
-        if(this.timerActive && this.checkTimeOver()){
+        if(this.timerActive && this.checkTimeOver())
             this.stopTimer();
-        }
-        this.drawTimer();
+        if(!this.gameManager.gameEnd)
+            this.drawTimer();
     }
     
     this.startTimer = function(){
