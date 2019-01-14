@@ -61,7 +61,7 @@ function mouseReleased(){
 }
 
 function windowResized(){
-    //cnv.position((windowWidth - width)/2, (windowHeight - height)/2);
+    cnv.position((windowWidth - 600)/2, 0);
 }
 
 window.addEventListener("beforeunload", function (e) {
